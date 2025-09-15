@@ -91,6 +91,7 @@ CREATE TABLE event_rounds (
     round_type_id UUID NOT NULL REFERENCES round_types(id),
     name TEXT NOT NULL, -- "Pool Stage", "Round of 16", "Finals"
     sequence INTEGER NOT NULL, -- To order the rounds (1, 2, 3...)
+    num_qualifiers_per_group INTEGER,
     is_complete BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
