@@ -31,7 +31,9 @@ CREATE TABLE locations (
 -- Individual players
 CREATE TABLE players (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name TEXT NOT NULL,
+    first_name TEXT NOT NULL,
+    middle_name TEXT,
+    last_name TEXT NOT NULL,
     state TEXT,
     date_of_birth DATE,
     profile_image_url TEXT,
