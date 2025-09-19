@@ -1,48 +1,20 @@
 import { Database } from "./types";
 
-export type TournamentListItem = {
-  id: number;
-  name: string;
-  start_date: string;
-  end_date: string;
-  status: string;
-  locations: {
-    city: string;
-    name: string;
-  }[] | null;
-  events: {count: number}[];
+export type TournamentListItem = Pick<Tournament, "id" | "name" | "status" | "start_date" | "end_date"> & {
+  locations: Pick<Location, "name" | "city"> | null,
+  events: {
+    count: number
+  }[]
 };
 
-export type TournamentSummary = {
-  id: string;
-  name: string;
-  start_date: string;
-  end_date: string;
-  status: string;
-  description: string;
-  shuttle_info: string;
-  banner_url: string;
-  is_registration_closed: boolean;
-  parking_info: string;
-  food_info: string;
-  misc_info: string;
-  contact_info: string;
-  locations: {
-    name: string;
-    address_line1: string;
-    address_line2: string;
-    city: string;
-    postcode: string;
-    state: string;
-  }[];
-  events: {
-    id: string;
-    name: string;
-   }[];
+export type TournamentSummary = Omit<Tournament, "created_at" | "created_by" | "location_id" | "updated_at"> & {
+  locations: Omit<Location, "created_at" | "id" | "updated_at"> | null,
+  events: Pick<Event, "id" | "name" | "entry_fee" | "first_prize_money" | "max_participants" | "current_entries">[] 
 };
 
 export type Location = Database['public']['Tables']['locations']['Row'];
 export type Event = Database['public']['Tables']['events']['Row'];
+export type Tournament = Database['public']['Tables']['tournaments']['Row'];
 
 export function fixToArray<T>(value: T | T[] | null | undefined): T[] {
   if (Array.isArray(value)) return value;

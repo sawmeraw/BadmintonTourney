@@ -3,8 +3,6 @@ import { TournamentList } from '@/components/tournaments/TournamentList';
 import { PaginationControls } from '@/components/utils/PaginationControls';
 import { LinkButton } from '@/components/utils/LinkButton';
 import { PageWrapper } from '@/components/layout/PageWrapper';
-import { fixToArray, TournamentListItem } from '@/supabase/queryTypes';
-import { Database } from '@/supabase/types';
 
 const PAGE_SIZE = 10;
 
@@ -19,7 +17,7 @@ const fetchTournaments = async (page: number) => {
         .order('start_date', { ascending: false })
         .range(from, to);
 
-    if (error) {
+    if (error || !data) {
         console.error("Error fetching tournaments:", error);
         return { tournaments: [], totalCount: 0 };
     }
@@ -40,10 +38,6 @@ export default async function TournamentsPage({
     const currentPage = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
     //totalCount is for pagination
     const { tournaments, totalCount } = await fetchTournaments(currentPage);
-    const normalizedTournaments = tournaments.map(t=>({
-        ...t,
-        locations: fixToArray(t.locations)
-    }))
 
     return (
         <PageWrapper>
@@ -59,7 +53,7 @@ export default async function TournamentsPage({
                 </div>
             </div>
 
-            <TournamentList tournaments={normalizedTournaments} />
+            <TournamentList tournaments={tournaments} />
 
             <PaginationControls
                 totalCount={totalCount}

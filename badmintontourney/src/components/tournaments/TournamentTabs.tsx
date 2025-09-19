@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import type { Database } from '@/supabase/types';
 import { 
   CalendarDaysIcon, MapPinIcon, UsersIcon, TrophyIcon,
   InformationCircleIcon, SparklesIcon, BeakerIcon, PhoneIcon
@@ -9,7 +8,7 @@ import {
 import { LinkButton } from '../utils/LinkButton';
 import { StatusBadge } from '../utils/StatusBadge';
 import { PageWrapper } from '../layout/PageWrapper';
-import { Event, Location, TournamentSummary } from '@/supabase/queryTypes';
+import {  TournamentSummary } from '@/supabase/queryTypes';
 
 
 const AtAGlanceItem = ({ icon: Icon, children }: { icon: React.ElementType, children: React.ReactNode }) => (
@@ -29,11 +28,9 @@ const InfoItem = ({ icon: Icon, title, children }: { icon: React.ElementType, ti
   </div>
 );
 
-
-export function TournamentDetailClient({ tournament }: { tournament: TournamentSummary }) {
+export function TournamentTabs({ tournament }: { tournament: TournamentSummary }) {
   const [activeTab, setActiveTab] = useState('Overview');
   const tabs = ['Overview', 'Venue & Logistics', 'Rules & Info', 'Contact'];
-  
   const location = tournament.locations;
 
   return (
@@ -83,7 +80,7 @@ export function TournamentDetailClient({ tournament }: { tournament: TournamentS
               </nav>
             </div>
             
-            <div className="min-h-[300px] flex-grow">
+            <div className="min-h-[200px] ">
               {activeTab === 'Overview' && (
                 <div className="prose max-w-none text-gray-600">
                   <p>{tournament.description}</p>
@@ -117,6 +114,43 @@ export function TournamentDetailClient({ tournament }: { tournament: TournamentS
                 </dl>
               )}
             </div>
+
+            <div className="min-h-[200px]">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Events</h3>
+                
+                {tournament.events && tournament.events.length > 0 ? (
+                    <div className="space-y-4">
+                    {tournament.events.map((event) => (
+                        <div 
+                        key={event.id} 
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border border-gray-200 p-4 bg-gray-50"
+                        >
+                        <div>
+                            <p className="text-lg font-semibold text-gray-800">{event.name}</p>
+                            <div className="mt-2 flex items-center space-x-6 text-sm text-gray-600">
+                            <span>Entry Fee: <span className="font-medium text-gray-900">${event.entry_fee}</span></span>
+                            <span>First Prize: <span className="font-medium text-emerald-600">${event.first_prize_money}</span></span>
+                            </div>
+                        </div>
+                        
+                        <div className="mt-4 sm:mt-0">
+                            <LinkButton 
+                            href={`/tournaments/${tournament.id}/events/${event.id}`}
+                            variant="secondary"
+                            size="sm"
+                            >
+                                Open
+                            </LinkButton>
+                        </div>
+                        </div>
+                    ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-8">
+                    <p className="text-gray-500">No events have been announced for this tournament yet.</p>
+                    </div>
+                )}
+                </div>
           </div>
 
           <div className="lg:col-span-1 p-6 bg-gray-50/70 border-l border-gray-200 rounded-r-lg">
@@ -127,7 +161,7 @@ export function TournamentDetailClient({ tournament }: { tournament: TournamentS
               </AtAGlanceItem>
               {location && (
                 <AtAGlanceItem icon={MapPinIcon}>
-                  {location[0].name}, {location[0].city}
+                  {location.name}, {location.city}
                 </AtAGlanceItem>
               )}
               <AtAGlanceItem icon={TrophyIcon}>5 Events</AtAGlanceItem>

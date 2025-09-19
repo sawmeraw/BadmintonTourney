@@ -1,4 +1,3 @@
-import { Database } from '@/supabase/types';
 import { TournamentCard } from './TournamentCard';
 import { TournamentListItem } from '@/supabase/queryTypes';
 
