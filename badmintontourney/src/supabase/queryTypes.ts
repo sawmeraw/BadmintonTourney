@@ -7,6 +7,20 @@ export type TournamentListItem = Pick<Tournament, "id" | "name" | "status" | "st
   }[]
 };
 
+export type EventQueryResult = {
+    id: string;
+    name: string | null;
+    tournaments: {
+        name: string;
+    };
+    event_rounds: {
+        id: string;
+        name: string;
+        sequence: number;
+    }[];
+}
+
+
 export type TournamentSummary = Omit<Tournament, "created_at" | "created_by" | "location_id" | "updated_at"> & {
   locations: Omit<Location, "created_at" | "id" | "updated_at"> | null,
   events: Pick<Event, "id" | "name" | "entry_fee" | "first_prize_money" | "max_participants" | "current_entries">[] 

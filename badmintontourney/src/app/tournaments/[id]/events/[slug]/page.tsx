@@ -1,31 +1,39 @@
+import { EventHeader } from "@/components/events/EventHeader";
+import { EventTabs } from "@/components/events/EventTabs";
+import { PageWrapper } from "@/components/layout/PageWrapper";
 import { createClient } from "@/supabase/server";
 import { notFound } from "next/navigation";
-import { TournamentTabs } from "@/components/tournaments/TournamentTabs";
-import { fixToArray } from "@/supabase/queryTypes";
 
+const getEventById = async (eventId : string)=>{
 
-const getEventById = async (id: string) => {
-  const supabase = createClient();
-  const { data, error } = await (await supabase)
-    .from('tournaments')
-    .select('id, name, start_date, end_date, status, shuttle_info, description, food_info, misc_info, banner_url, parking_info, views, is_registration_closed, contact_info, locations(name, address_line1, address_line2, city, postcode, state), events(id, name, entry_fee, first_prize_money, max_participants, current_entries)')
-    .eq('id', id)
-    .single();
-  if (error || !data) notFound();
-  return data;
-};
+    const supabase = createClient();
+    const {data, error} = await (await supabase)
+        .from('events')
+        .select(`id, name, description, tournaments(name), event_rounds(id, name, sequence)`)
+        .eq('id', eventId)
+        .single();
+    
+    if (error || !data){
+        console.error("Error fetching event details: ", error);
+        notFound();
+    }
+    // console.dir(data, {depth: null});
+    return data;
+}
 
-// export default async function EventDetailsPage({
-//   params,
-// }: {
-//   params: Promise<{ id: string }>
-// }) {
-//   const {id} = await params;
-//   const tournament = await getEventById(id);
-//   const normalizedTournament = {
-//     ...tournament,
-//     locations: fixToArray(tournament.locations)
-//   }
-//   return <TournamentTabs tournament={normalizedTournament}/>
+export default async function EventDetailsPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const {slug} = await params;
+  const event = await getEventById(slug);
+  
+  return (
+    <PageWrapper>
+        <EventHeader event={event}/>
+        <EventTabs eventId={event.id} initialDescription={event.description} rounds={event.event_rounds}/>
+    </PageWrapper>
+  )
 
-// }
+}
