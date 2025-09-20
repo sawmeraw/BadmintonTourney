@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ReactQueryProvider } from "./providers";
+import React from "react";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,10 +23,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-gray-50 text-gray-900`}>
         <div className="flex min-h-screen flex-col">
-          <Header />
-          {/* Page content from your page.tsx files will be rendered here */}
-          {children}
-          <Footer />
+          <ReactQueryProvider>
+            <Header />
+            {children}
+            <Footer />
+          </ReactQueryProvider>
         </div>
       </body>
     </html>

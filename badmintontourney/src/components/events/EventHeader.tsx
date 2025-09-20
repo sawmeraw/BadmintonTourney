@@ -12,7 +12,7 @@ export const EventHeader = ({ event }: EventHeaderProps) => {
       </h1>
       {event.tournaments && (
         <p className="mt-1 text-lg text-gray-600">
-          Part of the <span className="font-semibold">{event.tournaments.name}</span>
+            <span className="font-semibold">{event.tournaments.name}</span>
         </p>
       )}
     </div>

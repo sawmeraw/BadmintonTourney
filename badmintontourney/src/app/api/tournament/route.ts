@@ -39,11 +39,10 @@ export async function POST(req: Request){
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        // 6. Return the newly created tournament data with a 201 status code.
         return NextResponse.json(data, { status: 201 });
 
     } catch (e) {
-    // Handle cases where the request body isn't valid JSON.
+
         return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 }
