@@ -20,7 +20,7 @@ export type EventQueryResult = {
     }[];
 }
 
-export type FetchParticipantsApiResponse = Omit<Participants, "">
+export type FetchParticipantsApiResponse = Omit<Participant, "">
 
 
 export type TournamentSummary = Omit<Tournament, "created_at" | "created_by" | "location_id" | "updated_at"> & {
@@ -31,8 +31,13 @@ export type TournamentSummary = Omit<Tournament, "created_at" | "created_by" | "
 export type Location = Database['public']['Tables']['locations']['Row'];
 export type Event = Database['public']['Tables']['events']['Row'];
 export type Tournament = Database['public']['Tables']['tournaments']['Row'];
-export type Participants = Database['public']['Tables']['event_participants']['Row'];
-export type Players = Database['public']['Tables']['players']['Row'];
+export type Participant = Database['public']['Tables']['event_participants']['Row'];
+export type Player = Database['public']['Tables']['players']['Row'];
+export type EventRound = Database['public']['Tables'] ['event_rounds']['Row'];
+export type RoundGroup = Database['public']['Tables'] ['round_groups']['Row'];
+export type Match = Database['public']['Tables']['matches']['Row'];
+export type MatchSet = Database['public']['Tables']['match_sets']['Row'];
+export type RoundType = Database['public']['Tables']['round_types']['Row'];
 
 export function fixToArray<T>(value: T | T[] | null | undefined): T[] {
   if (Array.isArray(value)) return value;
