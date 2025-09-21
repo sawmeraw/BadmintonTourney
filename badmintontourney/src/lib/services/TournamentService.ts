@@ -3,9 +3,8 @@
 import { createClient } from "@/supabase/server";
 import { UpdateTournamentPayload } from "../types/writes";
 
-const supabase = createClient();
-
 export const getTournamentForEdit = async (tournamentId: string) => {
+    const supabase = createClient();
     const {data, error} = await (await supabase).from(
         'tournaments'
     ).select('*, locations(*)')
@@ -17,6 +16,7 @@ export const getTournamentForEdit = async (tournamentId: string) => {
 }
 
 export const getAllLocations = async()=> {
+    const supabase = createClient();
     const {data, error} = await (await supabase)
         .from('locations')
         .select('id, name');
@@ -25,6 +25,7 @@ export const getAllLocations = async()=> {
 }
 
 export const updateTournament = async (tournamentId: string, payload: UpdateTournamentPayload) =>{
+    const supabase = createClient();
     const {data, error} = await (await supabase)
         .from('tournaments')
         .update(payload)

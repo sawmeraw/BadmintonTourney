@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const tournamentUpdateSchema = z.object({
+export const tournamentSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional().nullable(),
   start_date: z.string().refine(val => !isNaN(Date.parse(val)), {
@@ -20,4 +20,4 @@ export const tournamentUpdateSchema = z.object({
   is_registration_closed: z.boolean().default(false),
 });
 
-export type UpdateTournamentPayload = z.infer<typeof tournamentUpdateSchema>;
+export type UpdateTournamentPayload = z.infer<typeof tournamentSchema>;
