@@ -33,10 +33,10 @@ export const TournamentCard = ({ tournament }: { tournament: TournamentListItem 
                             {new Date(tournament.start_date).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })} - {new Date(tournament.end_date).toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}, {new Date(tournament.start_date).toLocaleDateString(undefined, {year: 'numeric'})}
                         </span>
                     </div>
-                    {tournament.locations && tournament.locations[0] ? (
+                    {tournament.locations && tournament.locations.name ? (
                         <div className="flex items-center">
                             <MapPinIcon className="h-5 w-5 text-gray-400 mr-2 flex-shrink-0" />
-                            <span>{tournament.locations[0].name != "" ? tournament.locations[0].name : ""}, {tournament.locations[0].city != "" ? tournament.locations[0].city : "" }</span>
+                            <span>{tournament.locations.name != "" ? tournament.locations.name : ""}, {tournament.locations.city != "" ? tournament.locations.city : "" }</span>
                         </div>
                     ) : 
                         <div className='flex items-center'>
