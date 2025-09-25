@@ -1,5 +1,5 @@
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { TournamentForm } from "../_components/TournamentEditForm";
+import TournamentEditForm from "../_components/TournamentEditForm";
 import { getAllLocations } from "@/lib/services/TournamentService";
 
 export default async function CreateTournamentPage() {
@@ -7,10 +7,10 @@ export default async function CreateTournamentPage() {
 
     return (
         <PageWrapper>
-            <div className="mb-6">
+            <div className="my-4">
                 <h1 className="text-3xl font-bold">Create New Tournament</h1>
             </div>
-            <TournamentForm locations={locations} />
+            <TournamentEditForm locations={locations} />
         </PageWrapper>
     );
 }

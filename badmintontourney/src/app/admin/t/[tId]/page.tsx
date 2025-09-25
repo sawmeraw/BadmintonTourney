@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { TournamentForm } from "../_components/TournamentEditForm";
 import { getTournamentForEdit, getAllLocations } from "@/lib/services/TournamentService";
+import TournamentEditForm from "../_components/TournamentEditForm";
 
 export default async function EditTournamentPage({
   params,
@@ -18,10 +18,10 @@ export default async function EditTournamentPage({
 
     return (
         <PageWrapper>
-            <div className="mb-6">
+            <div className="my-4">
                 <h3 className="text-3xl font-bold">Edit Tournament</h3>
             </div>
-            <TournamentForm initialData={tournament} locations={locations} />
+            <TournamentEditForm initialData={tournament} locations={locations}/>
         </PageWrapper>
     );
 }
