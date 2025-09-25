@@ -100,7 +100,6 @@ export async function updateTournament(tournamentId:string, prevState: FormState
 
   if(!validatedFields.success){
     const {fieldErrors} = validatedFields.error.flatten();
-    console.log(fieldErrors);
     return {
       message: "Submission failed. Please check errors below.",
       success: false,

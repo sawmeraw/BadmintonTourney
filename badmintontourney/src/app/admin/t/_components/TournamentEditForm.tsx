@@ -116,6 +116,7 @@ export default function TournamentEditForm({initialData, locations} : Tournament
                         <option value="">Select a location</option>
                         {locations.map(loc => <option key={loc.id} value={loc.id}>{loc.name}</option>)}
                     </select>
+                    {state.errors?.location_id && <p className="mt-1 text-sm text-red-600">{state.errors.location_id}</p>}
                 </div>
                  <div>
                     <FormLabel htmlFor="status">Status</FormLabel>
