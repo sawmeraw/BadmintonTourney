@@ -21,7 +21,7 @@ export default async function EditTournamentPage({
             <div className="my-4">
                 <h3 className="text-3xl font-bold">Edit Tournament</h3>
             </div>
-            <TournamentEditForm initialData={tournament} locations={locations}/>
+            <TournamentEditForm initialData={tournament} locations={locations} events={tournament.events}/>
         </PageWrapper>
     );
 }

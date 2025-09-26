@@ -1,13 +1,13 @@
 "use server";
 
 import { createClient } from "@/supabase/server";
-import { UpdateTournamentPayload } from "../types/writes";
+import { CreateTournamentPayload, UpdateTournamentPayload } from "../types/writes";
 
 export const getTournamentForEdit = async (tournamentId: string) => {
     const supabase = createClient();
     const {data, error} = await (await supabase).from(
         'tournaments'
-    ).select('*, locations(*)')
+    ).select('*, locations(*), events(id, name)')
     .eq('id', tournamentId)
     .single();
 
@@ -24,7 +24,7 @@ export const getAllLocations = async()=> {
     return data;
 }
 
-export const updateTournament = async (tournamentId: string, payload: UpdateTournamentPayload) =>{
+export const updateTournamentWithId = async (tournamentId: string, payload: UpdateTournamentPayload) =>{
     const supabase = createClient();
     const {data, error} = await (await supabase)
         .from('tournaments')
@@ -35,4 +35,16 @@ export const updateTournament = async (tournamentId: string, payload: UpdateTour
     
     if (error) throw new Error(error.message);
     return data;
+}
+
+export const createTournament = async(payload : CreateTournamentPayload): Promise<string | undefined> =>{
+    const supabase = createClient();
+    const {data, error} = await (await supabase)
+    .from('tournaments')
+    .insert(payload)
+    .select('id')
+    .single();
+
+    if (error) throw new Error(error.message);
+    return data?.id;
 }

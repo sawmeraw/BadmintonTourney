@@ -3,46 +3,8 @@
 import { createClient } from "@/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import z from "zod";
-
-const statusOptions = z.union([
-  z.literal("upcoming"),
-  z.literal("ongoing"),
-  z.literal("completed"),
-  z.literal("cancelled"),
-]);
-
-const tournamentSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional().nullable(),
-  start_date: z.string().refine(val => !isNaN(Date.parse(val)), {
-    message: "Invalid start date format",
-  }),
-  end_date: z.string().refine(val => !isNaN(Date.parse(val)), {
-    message: "Invalid end date format",
-  }),
-  location_id: z.uuid("Invalid location ID").nullable(),
-  status: statusOptions,
-  shuttle_info: z.string().optional().nullable(),
-  food_info: z.string().optional().nullable(),
-  parking_info: z.string().optional().nullable(),
-  misc_info: z.string().optional().nullable(),
-  contact_info: z.string().optional().nullable(),
-  banner_url: z.string().refine(val => {
-    try {
-      new URL(val);
-      return true;
-    } catch {
-      return false;
-    }
-  }, {
-    message: "Invalid banner URL",
-  }).optional().nullable(),
-  is_registration_closed: z.boolean().default(false),
-});
-
-
-export type UpdateTournamentPayload = z.infer<typeof tournamentSchema>;
+import { createTournament, updateTournamentWithId } from "../services/TournamentService";
+import { tournamentSchema } from "../types/writes";
 
 export type FormState = {
   message: string;
@@ -64,9 +26,7 @@ export type FormState = {
   };
 };
 
-export async function createTournament(prevState: FormState, formData: FormData): Promise<FormState>{
-  console.log(Object.fromEntries(formData), {depth: null});
-  const supabase = createClient();
+export async function createTournamentAction(prevState: FormState, formData: FormData): Promise<FormState>{
   const rawFormData = Object.fromEntries(formData.entries());
 
   const validatedFields = tournamentSchema.safeParse(rawFormData);
@@ -80,26 +40,31 @@ export async function createTournament(prevState: FormState, formData: FormData)
     }
   }
 
-  const {data, error} = await (await supabase)
-    .from('tournaments')
-    .insert(validatedFields.data)
-    .select('id')
-    .single();
-
-  if(error){
-    return {message: `Database Error: ${error.message}`, success: false};
+  try{
+    const id = createTournament(validatedFields.data);
+    if(!id){
+      return {
+        message: "An unknown error occurred.",
+        success: false,
+      }
+    }
+    revalidatePath('/admin/tournaments');
+    redirect(`/admin/t/${id}`);
+  } catch(error){
+    const message = error instanceof Error ? error.message : typeof error === "string" ? error : "An unknown error occurred";
+    return {
+      message:`Database error: ${message}`,
+      success: false,
+    }
   }
-
-  revalidatePath('/admin/tournaments');
-  redirect(`/admin/t/${data.id}`);
 }
 
-export async function updateTournament(tournamentId:string, prevState: FormState, formData: FormData) : Promise<FormState>{
-  const supabase = createClient();
+export async function updateTournamentAction(tournamentId:string, prevState: FormState, formData: FormData) : Promise<FormState>{
   const validatedFields = tournamentSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if(!validatedFields.success){
     const {fieldErrors} = validatedFields.error.flatten();
+    console.dir(fieldErrors, {depth: null});
     return {
       message: "Submission failed. Please check errors below.",
       success: false,
@@ -107,15 +72,13 @@ export async function updateTournament(tournamentId:string, prevState: FormState
     }
   }
 
-  const {error} = await (await supabase)
-    .from('tournaments')
-    .update(validatedFields.data)
-    .eq('id', tournamentId);
-  
-  if(error){
+  try{
+    await updateTournamentWithId(tournamentId, validatedFields.data);
+  } catch(error){
+    const message = error instanceof Error ? error.message : typeof error === "string" ? error : "An unknown error occurred";
     return {
-      message: `Database error: ${error.message}`,
-      success: false
+      message:`Database error: ${message}`,
+      success: false,
     }
   }
 

@@ -1,16 +1,21 @@
 'use client';
 
 import { Button } from "@/components/utils/Button";
-import { createTournament, FormState, updateTournament } from "@/lib/actions/TournamentActions";
+import { LinkButton } from "@/components/utils/LinkButton";
+import { EventsList, NoEvents } from "@/components/tournaments/AdminEventList";
+import { createTournamentAction, FormState, updateTournamentAction } from "@/lib/actions/TournamentActions";
 import { Tournament } from "@/supabase/queryTypes";
 import { CheckCircleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { FormLabel } from "@/components/utils/FormLabel";
 
 type LocationFormOption = { id: string, name: string };
+type EventListItem = { id: string; name: string | null; };
 interface TournamentFormProps{
   initialData?: Tournament | null;
   locations: LocationFormOption[];
+  events: EventListItem[];
 }
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
@@ -22,20 +27,14 @@ function SubmitButton({ isEditing }: { isEditing: boolean }) {
   );
 }
 
-const FormLabel = ({ htmlFor, children }: { htmlFor: string, children: React.ReactNode }) => (
-  <label htmlFor={htmlFor} className="block text-sm font-medium leading-6 text-gray-900">
-    {children}
-  </label>
-);
-
-export default function TournamentEditForm({initialData, locations} : TournamentFormProps){
+export default function TournamentEditForm({initialData, locations, events} : TournamentFormProps){
   const isEditing = !!initialData;
   const initialState: FormState = {message: '', success: false};
 
-  const actionToCall = isEditing ? updateTournament.bind(null, initialData.id) : createTournament;
+  const actionToCall = isEditing ? updateTournamentAction.bind(null, initialData.id) : createTournamentAction;
   const [state, formAction] = useActionState(actionToCall, initialState);
 
-  const [locationId, setLocationId] = useState(initialData?.location_id || '');
+  const hasEvents = events && events.length > 0; 
 
   return (
     <form action={formAction}>
@@ -107,7 +106,7 @@ export default function TournamentEditForm({initialData, locations} : Tournament
            </div>
         </div>
 
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-6">
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-6">
                 <h2 className="text-lg font-semibold leading-7 text-gray-900">Settings</h2>
                 <div>
@@ -138,6 +137,12 @@ export default function TournamentEditForm({initialData, locations} : Tournament
                 <div className="border-t border-gray-200 pt-6">
                     <SubmitButton isEditing={isEditing} />
                 </div>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-6">
+              <h2 className="text-lg font-semibold leading-7 text-gray-900">Configure Events</h2>
+                {hasEvents ?
+                    <EventsList tournamentId={initialData?.id} events={events}></EventsList>: <NoEvents tournamentId={initialData?.id}></NoEvents>
+                }
             </div>
         </div>
       </div>
