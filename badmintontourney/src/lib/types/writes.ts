@@ -39,3 +39,43 @@ export const tournamentSchema = z.object({
 
 export type UpdateTournamentPayload = z.infer<typeof tournamentSchema>;
 export type CreateTournamentPayload = z.infer<typeof tournamentSchema>;
+
+export const updateEventSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  event_type_id: z.uuid("Invalid event type selected."),
+  description: z.string().optional().nullable(),
+  entry_fee: z.coerce.number().min(0).nullable().optional(),
+  first_prize_money: z.coerce.number().min(0).optional(),
+  second_prize_money: z.coerce.number().min(0).optional(),
+  third_prize_money: z.coerce.number().min(0).optional(),
+  prize_details: z.string().optional().nullable(),
+  sponsor_name: z.string().optional().nullable(),
+  max_participants: z.coerce.number().min(0),
+  notes: z.string().optional().nullable(),
+  is_featured: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
+  has_third_place_match: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
+  finalised_for_matches: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
+  template_id: z.uuid("Invalid template selected").nullable().optional(),
+})
+
+export const createEventSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  tournament_id: z.uuid("Invalid Tournament"),
+  event_type_id: z.uuid("Invalid event type selected."),
+  description: z.string().optional().nullable(),
+  entry_fee: z.coerce.number().min(0).nullable().optional(),
+  first_prize_money: z.coerce.number().min(0).optional(),
+  second_prize_money: z.coerce.number().min(0).optional(),
+  third_prize_money: z.coerce.number().min(0).optional(),
+  prize_details: z.string().optional().nullable(),
+  sponsor_name: z.string().optional().nullable(),
+  max_participants: z.coerce.number().min(0),
+  notes: z.string().optional().nullable(),
+  is_featured: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
+  has_third_place_match: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
+  finalised_for_matches: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
+  template_id: z.uuid("Invalid template selected").nullable().optional(),
+})
+
+export type UpdateEventPayload = z.infer<typeof updateEventSchema>;
+export type CreateEventPayload = z.infer<typeof createEventSchema>;

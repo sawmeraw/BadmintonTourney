@@ -9,7 +9,7 @@ export default async function EditTournamentPage({
   params: Promise<{tId: string, eId: string }>
 }) {
     const {tId, eId} = await params;
-    console.log(`route variables here: tId=${tId}, eId=${eId}`);
+    // console.log(`route variables here: tId=${tId}, eId=${eId}`);
     const [event, event_types, templates] = await Promise.all([
         getEventWithEventIdForEdit(eId),
         getAllEventTypes(),

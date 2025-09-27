@@ -1,9 +1,8 @@
 'use client';
 
 import { Button } from "@/components/utils/Button";
-import { LinkButton } from "@/components/utils/LinkButton";
 import { EventsList, NoEvents } from "@/components/tournaments/AdminEventList";
-import { createTournamentAction, FormState, updateTournamentAction } from "@/lib/actions/TournamentActions";
+import { createTournamentAction, TournamentFormState, updateTournamentAction } from "@/lib/actions/TournamentActions";
 import { Tournament } from "@/supabase/queryTypes";
 import { CheckCircleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useActionState } from "react";
@@ -15,7 +14,7 @@ type EventListItem = { id: string; name: string | null; };
 interface TournamentFormProps{
   initialData?: Tournament | null;
   locations: LocationFormOption[];
-  events: EventListItem[];
+  events?: EventListItem[];
 }
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
@@ -29,7 +28,7 @@ function SubmitButton({ isEditing }: { isEditing: boolean }) {
 
 export default function TournamentEditForm({initialData, locations, events} : TournamentFormProps){
   const isEditing = !!initialData;
-  const initialState: FormState = {message: '', success: false};
+  const initialState: TournamentFormState = {message: '', success: false};
 
   const actionToCall = isEditing ? updateTournamentAction.bind(null, initialData.id) : createTournamentAction;
   const [state, formAction] = useActionState(actionToCall, initialState);

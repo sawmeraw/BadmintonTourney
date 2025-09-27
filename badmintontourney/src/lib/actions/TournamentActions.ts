@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { createTournament, updateTournamentWithId } from "../services/TournamentService";
 import { tournamentSchema } from "../types/writes";
 
-export type FormState = {
+export type TournamentFormState = {
   message: string;
   success: boolean;
   errors?: {
@@ -26,7 +26,7 @@ export type FormState = {
   };
 };
 
-export async function createTournamentAction(prevState: FormState, formData: FormData): Promise<FormState>{
+export async function createTournamentAction(prevState: TournamentFormState, formData: FormData): Promise<TournamentFormState>{
   const rawFormData = Object.fromEntries(formData.entries());
 
   const validatedFields = tournamentSchema.safeParse(rawFormData);
@@ -41,7 +41,7 @@ export async function createTournamentAction(prevState: FormState, formData: For
   }
 
   try{
-    const id = createTournament(validatedFields.data);
+    const id = await createTournament(validatedFields.data);
     if(!id){
       return {
         message: "An unknown error occurred.",
@@ -59,7 +59,7 @@ export async function createTournamentAction(prevState: FormState, formData: For
   }
 }
 
-export async function updateTournamentAction(tournamentId:string, prevState: FormState, formData: FormData) : Promise<FormState>{
+export async function updateTournamentAction(tournamentId:string, prevState: TournamentFormState, formData: FormData) : Promise<TournamentFormState>{
   const validatedFields = tournamentSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if(!validatedFields.success){
