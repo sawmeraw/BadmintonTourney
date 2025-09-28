@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { getAllEventTypes, getAllTemplates, getEventWithEventIdForEdit } from "@/lib/services/EventService";
 import EventEditForm from "../_components/EventEditForm";
-
+import { LinkButton } from "@/components/utils/LinkButton";
 export default async function EditTournamentPage({
   params,
 }: {
@@ -20,8 +20,11 @@ export default async function EditTournamentPage({
 
     return (
         <PageWrapper>
-            <div className="my-4">
+            <div className="my-4 flex justify-between">
                 <h3 className="text-3xl font-bold"> {event.name} - {event.tournaments.name}</h3>
+                <LinkButton href={`/admin/t/${tId}/e/${eId}/reg`} variant="primary">
+                    <span>Manage Participants</span>
+                </LinkButton>
             </div>
             <EventEditForm initialData={event} eventTypes={event_types} templates={templates} tournamentId={tId}/>
         </PageWrapper>

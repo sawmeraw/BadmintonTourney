@@ -30,6 +30,7 @@ export type TournamentSummary = Omit<Tournament, "created_at" | "created_by" | "
 
 export type Location = Database['public']['Tables']['locations']['Row'];
 export type Event = Database['public']['Tables']['events']['Row'];
+export type EventType = Database['public']['Tables']['event_types']['Row'];
 export type Tournament = Database['public']['Tables']['tournaments']['Row'];
 export type Participant = Database['public']['Tables']['event_participants']['Row'];
 export type Player = Database['public']['Tables']['players']['Row'];
