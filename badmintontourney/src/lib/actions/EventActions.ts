@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { createEvent, updateEventWithId } from "../services/EventService";
-import { updateEventSchema, createEventSchema } from "../types/writes";
+import { updateEventSchema, createEventSchema, UpdateEventPayload, UpdateFinalizedEventPayload, updateFinalizedEventSchema } from "../types/writes";
 import { redirect } from "next/navigation";
+import { ZodSafeParseResult } from "zod";
 
 export type EventFormState = {
   message: string;
@@ -69,9 +70,18 @@ export async function createEventAction(tournamentId: string, prevState: EventFo
 }
 
 
-export async function updateEventAction(eventId:string, prevState: EventFormState, formData: FormData) : Promise<EventFormState>{
-  const validatedFields = updateEventSchema.safeParse(Object.fromEntries(formData.entries()));
-
+export async function updateEventAction(eventId:string, isFinalized: boolean, prevState: EventFormState, formData: FormData) : Promise<EventFormState>{
+  let validatedFields : any; 
+  if(isFinalized){
+    validatedFields = updateFinalizedEventSchema.safeParse(
+      Object.fromEntries(formData.entries())
+    );
+  } else{
+    validatedFields = updateEventSchema.safeParse(
+      Object.fromEntries(formData.entries())
+    );
+  }
+  // console.log("Validated fields: ", validatedFields.data);
   if(!validatedFields.success){
     const {fieldErrors} = validatedFields.error.flatten();
     console.dir(fieldErrors, {depth: null});

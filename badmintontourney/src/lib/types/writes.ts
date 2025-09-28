@@ -36,7 +36,6 @@ export const tournamentSchema = z.object({
   is_registration_closed: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
 });
 
-
 export type UpdateTournamentPayload = z.infer<typeof tournamentSchema>;
 export type CreateTournamentPayload = z.infer<typeof tournamentSchema>;
 
@@ -56,6 +55,18 @@ export const updateEventSchema = z.object({
   has_third_place_match: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
   finalised_for_matches: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
   template_id: z.uuid("Invalid template selected").nullable().optional(),
+})
+
+export const updateFinalizedEventSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional().nullable(),
+  entry_fee: z.coerce.number().min(0).nullable().optional(),
+  first_prize_money: z.coerce.number().min(0).optional(),
+  second_prize_money: z.coerce.number().min(0).optional(),
+  third_prize_money: z.coerce.number().min(0).optional(),
+  prize_details: z.string().optional().nullable(),
+  sponsor_name: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
 })
 
 export const createEventSchema = z.object({
@@ -79,3 +90,4 @@ export const createEventSchema = z.object({
 
 export type UpdateEventPayload = z.infer<typeof updateEventSchema>;
 export type CreateEventPayload = z.infer<typeof createEventSchema>;
+export type UpdateFinalizedEventPayload = z.infer<typeof updateFinalizedEventSchema>;
