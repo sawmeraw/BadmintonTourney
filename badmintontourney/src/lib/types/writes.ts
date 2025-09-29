@@ -112,7 +112,7 @@ export const createParticipantApiSchema = z.object({
   player1: playerSchema,
   player2: playerSchema.optional(),
   seed: z.number().int().nonnegative().optional(),
-  autoSeed: transformCheckboxtoBoolean,
+  autoSeed: z.boolean(),
   status: participantStatusOptions,
   event_id: z.string()
 }).refine(data =>{
