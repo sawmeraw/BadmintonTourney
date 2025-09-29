@@ -3,7 +3,7 @@
 import { Button } from "@/components/utils/Button";
 import { LinkButton } from "@/components/utils/LinkButton";
 import { Event } from "@/supabase/queryTypes";
-import { useActionState, useRef, useState } from "react";
+import { startTransition, useActionState, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { FormLabel } from "@/components/utils/FormLabel";
 import { CheckCircleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
@@ -52,13 +52,17 @@ export default function EventEditForm({initialData, eventTypes, templates, tourn
         if(formData.get('finalised_for_matches')){
             setIsModalOpen(true);
         } else{
-            formAction(formData);
+            startTransition(()=>{
+                formAction(formData);
+            });
         }
     }
 
     const handleConfirmFinalise = ()=>{
         const formData = new FormData(formRef.current!);
-        formAction(formData);
+        startTransition(()=>{
+            formAction(formData);
+        })
         setIsModalOpen(false);
     }
 
