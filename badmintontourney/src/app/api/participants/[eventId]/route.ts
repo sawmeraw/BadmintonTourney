@@ -55,5 +55,5 @@ export async function POST(request: Request, {params} : {params: {eventId: strin
         return NextResponse.json({error: message}, {status:500});
     }
 
-    return NextResponse.json({status: 500});
+    return NextResponse.json({status: 200});
 }
