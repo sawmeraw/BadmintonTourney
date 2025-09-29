@@ -1,6 +1,6 @@
 import { EventRound, Match, MatchSet, Participant, Player, RoundGroup, RoundType } from "@/supabase/queryTypes";
 
-type PlayerSummary = Pick<
+export type PlayerSummary = Pick<
   Player,
   | "id"
   | "first_name"

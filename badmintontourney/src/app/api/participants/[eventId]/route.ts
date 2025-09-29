@@ -1,3 +1,5 @@
+import { createParticipantsWithEventId } from "@/lib/services/EventService";
+import { createParticipantApiSchema } from "@/lib/types/writes";
 import { createClient } from "@/supabase/server";
 import { NextResponse } from "next/server";
 
@@ -23,8 +25,6 @@ export async function GET(
             }
         );
 
-        // console.dir(data, {depth: null});
-
         if(error){
             console.error(error);
             return NextResponse.json({error: error.message}, {status: 500});
@@ -34,5 +34,21 @@ export async function GET(
     } catch(error){
         console.error(error);
         return NextResponse.json({error: error}, {status: 500});
+    }
+}
+
+export async function POST(request: Request, {params} : {params: {eventId: string}}){
+
+    const validatedFields = createParticipantApiSchema.safeParse(request.body);
+    if (!validatedFields.success){
+        return NextResponse.json({error: validatedFields.error.message}, {status:400});
+    }
+
+    const data = validatedFields.data;
+    try{
+        await createParticipantsWithEventId(params.eventId, data);
+    } catch(error){
+        const message = error instanceof Error ? error.message : String(error);
+        return NextResponse.json({error: message}, {status:500});
     }
 }

@@ -10,10 +10,15 @@ const fetchParticipants = async (eventId :string, page: number, pageSize: number
     return data as ParticipantListApiResponse; 
 }
 
-export const useParticipants = (eventId: string, page: number, pageSize: number) =>{
-    return useQuery<ParticipantListApiResponse>({
+export const useParticipants = (eventId: string, page: number, pageSize: number, initialData?: ParticipantListApiResponse) =>{
+
+    const queryOptions = {
         queryKey: ['participants', eventId],
         queryFn: ()=> fetchParticipants(eventId, page, pageSize),
         enabled: !!eventId,
-    })
+    }
+    return useQuery<ParticipantListApiResponse>({
+        ...queryOptions,
+        ...(page === 1 && initialData ? initialData : {})
+    });
 }

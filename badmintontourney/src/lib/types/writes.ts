@@ -7,6 +7,9 @@ const statusOptions = z.union([
   z.literal("cancelled"),
 ]);
 
+const participantStatusOptions = z.union([z.literal("active"), z.literal("withdrawn"), z.literal("disqualified")]);
+const transformCheckboxtoBoolean = z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]);
+
 export const tournamentSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional().nullable(),
@@ -33,7 +36,7 @@ export const tournamentSchema = z.object({
   }, {
     message: "Invalid banner URL",
   }).optional().nullable(),
-  is_registration_closed: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
+  is_registration_closed: transformCheckboxtoBoolean,
 });
 
 export type UpdateTournamentPayload = z.infer<typeof tournamentSchema>;
@@ -51,11 +54,11 @@ export const updateEventSchema = z.object({
   sponsor_name: z.string().optional().nullable(),
   max_participants: z.coerce.number().min(0),
   notes: z.string().optional().nullable(),
-  is_featured: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
-  has_third_place_match: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
-  finalised_for_matches: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
+  is_featured: transformCheckboxtoBoolean,
+  has_third_place_match: transformCheckboxtoBoolean,
+  finalised_for_matches: transformCheckboxtoBoolean,
   template_id: z.uuid("Invalid template selected").nullable().optional(),
-})
+});
 
 export const updateFinalizedEventSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -67,7 +70,7 @@ export const updateFinalizedEventSchema = z.object({
   prize_details: z.string().optional().nullable(),
   sponsor_name: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
-})
+});
 
 export const createEventSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -82,12 +85,61 @@ export const createEventSchema = z.object({
   sponsor_name: z.string().optional().nullable(),
   max_participants: z.coerce.number().min(0),
   notes: z.string().optional().nullable(),
-  is_featured: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
-  has_third_place_match: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
-  finalised_for_matches: z.union([z.string().transform((data)=> data === "on"), z.literal(undefined).transform(()=> false)]),
+  is_featured: transformCheckboxtoBoolean,
+  has_third_place_match: transformCheckboxtoBoolean,
+  finalised_for_matches: transformCheckboxtoBoolean,
   template_id: z.uuid("Invalid template selected").nullable().optional(),
+});
+
+const existingPlayerSchema = z.object({
+  mode: z.literal("existing"),
+  player_id: z.string(),
+})
+
+const newPlayerSchema = z.object({
+  mode: z.literal("new"),
+  first_name: z.string().min(1),
+  last_name: z.string().min(1),
+  middle_name: z.string().nullable().optional()
+})
+
+const playerSchema = z.discriminatedUnion('mode', [
+  existingPlayerSchema, newPlayerSchema
+]);
+
+export const createParticipantApiSchema = z.object({
+  event_type: z.enum(["singles", "doubles"]),
+  player1: playerSchema,
+  player2: playerSchema.optional(),
+  seed: z.number().int().nonnegative().optional(),
+  autoSeed: transformCheckboxtoBoolean,
+  status: participantStatusOptions,
+  event_id: z.string()
+}).refine(data =>{
+  if(data.event_type == "doubles"){
+    return !! data.player2;
+  }
+  return true;
+}, {
+  message: "Doubles events require a second player",
+  path: ["player2"],
+});
+
+export const createPlayerSchema = z.object({
+  first_name: z.string("First name is required").min(1),
+  last_name: z.string("Last name is required").min(1),
+  middle_name: z.string().optional().nullable(),
+  state: z.string().max(15).nullable().optional(),
+  date_of_birth: z.string().refine(val=>{
+    return !isNaN(Date.parse(val))
+  }, {
+    message: "Invalid date format",
+  }).optional().nullable(),
+  profile_image_url: z.string().nullable().optional()
 })
 
 export type UpdateEventPayload = z.infer<typeof updateEventSchema>;
 export type CreateEventPayload = z.infer<typeof createEventSchema>;
 export type UpdateFinalizedEventPayload = z.infer<typeof updateFinalizedEventSchema>;
+export type CreateParticipantApiPayload = z.infer<typeof createParticipantApiSchema>;
+export type CreatePlayerPayload = z.infer<typeof createPlayerSchema>;
