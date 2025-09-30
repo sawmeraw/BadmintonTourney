@@ -13,13 +13,15 @@ export type PlayerSummary = Pick<
   | "middle_name"
 >;
 
+export type ParticipantApiResponse = Pick<Participant, "id" | "seed" | "status"> & {
+      player1: PlayerSummary;
+      player2: PlayerSummary | null;
+    };
+
 export type ParticipantListApiResponse = {
   totalCount: number;
   participants: Array<
-    Pick<Participant, "id" | "seed" | "status"> & {
-      player1: PlayerSummary;
-      player2: PlayerSummary | null;
-    }
+    ParticipantApiResponse
   >;
 };
 

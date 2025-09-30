@@ -1,18 +1,17 @@
 'use client';
 
 import { StatusBadge } from '@/components/utils/StatusBadge';
+import { ParticipantApiResponse, ParticipantListApiResponse } from '@/lib/types/api';
 import { Participant } from '@/supabase/queryTypes';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface ParticipantRowProps{
-    participant: Participant;
+    participant: ParticipantApiResponse;
 }
 
 export const ParticipantRow = ( {participant}: ParticipantRowProps) => {
-    // NOTE: Your data fetching needs to be updated to JOIN the player names.
-    // For now, we'll display the player IDs as placeholders.
-    const player1Name = `Player (${participant.player1_id.substring(0, 8)}...)`;
-    const player2Name = participant.player2_id ? ` & Player (${participant.player2_id.substring(0, 8)}...)` : '';
+    const player1Name = `${participant.player1.first_name} ${participant.player1.last_name}`;
+    const player2Name = `${participant.player2?.first_name} ${participant.player2?.last_name}`;
 
     return (
         <tr>

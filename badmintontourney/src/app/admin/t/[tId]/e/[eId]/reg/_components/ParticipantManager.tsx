@@ -1,34 +1,16 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Button } from '@/components/utils/Button';
 import { AddParticipantModal } from './ParticipantModal';
 import { ParticipantRow } from './ParticipantRow';
 import { PaginationControls } from '@/components/utils/PaginationControls';
-import { PlayerSummary, type ParticipantListApiResponse } from '@/lib/types/api';
+import { PlayerBase, PlayerSummary, type ParticipantListApiResponse } from '@/lib/types/api';
 import { Participant } from '@/supabase/queryTypes';
+import { useParticipants } from '@/hooks/useParticipants';
 
 const PAGE_SIZE = 20;
-
-// const fetchParticipants = async (
-//   eventId: string,
-//   page: number
-// ): Promise<ParticipantListApiResponse> => {
-//   const response = await fetch(`/api/participants/${eventId}?page=${page}&pageSize=${PAGE_SIZE}`);
-//   if (!response.ok) throw new Error("Failed to fetch participants");
-//   return response.json();
-// };
-
-// export const useParticipants = (eventId: string, page: number, initialData: ParticipantListApiResponse) => {
-//   return useQuery({
-//       queryKey: ['manage_participants', eventId, page],
-//       queryFn: () => fetchParticipants(eventId, page),
-//       initialData: initialData,
-//       enabled: !!eventId,
-//   });
-// };
 
 const TableSkeleton = () => (
     <div className="animate-pulse">
@@ -52,25 +34,21 @@ const TableSkeleton = () => (
 
 export interface ParticipantManagerProps {
   eventId: string;
-  initialData: { // Matches the API response
-    totalCount: number;
-    participants: Participant[];
-  };
   eventType: {
     is_doubles: boolean;
   };
-  allPlayers: PlayerSummary[]; 
+  allPlayers: PlayerBase[]; 
 }
 
-export function ParticipantManager({ eventId, initialData, eventType, allPlayers } : ParticipantManagerProps) {
+export function ParticipantManager({ eventId, eventType, allPlayers } : ParticipantManagerProps) {
     const searchParams = useSearchParams();
     const page = Number(searchParams.get('page') ?? 1);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const { data, isLoading, isError } = useParticipants(eventId, page, initialData);
+    const { data, isLoading, isError } = useParticipants(eventId, page, PAGE_SIZE);
 
     if (isLoading) return <TableSkeleton />;
-    if (isError) return <div>Error loading data.</div>;
+    if (isError) return <div>Error fetching participants.</div>;
 
     const participants = data?.participants || [];
     const totalCount = data?.totalCount || 0;

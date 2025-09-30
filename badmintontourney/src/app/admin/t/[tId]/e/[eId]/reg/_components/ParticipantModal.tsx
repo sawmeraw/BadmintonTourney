@@ -3,18 +3,21 @@
 import { useState } from 'react';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { Button } from '@/components/utils/Button';
+import { PlayerBase } from '@/lib/types/api';
 
 interface AddParticipantModalProps{
     isOpen: boolean;
     onClose: ()=>void;
     isDoubles: boolean;
+    eventId: string;
+    allPlayers: PlayerBase[];
 }
 
 export function AddParticipantModal({ isOpen, onClose, isDoubles } : AddParticipantModalProps) {
     const [mode, setMode] = useState<'existing' | 'new'>('existing');
 
     const handleAdd = () => {
-        // TODO: This will call a server action or API route
+        
         alert('Adding participant (placeholder)');
         onClose();
     };

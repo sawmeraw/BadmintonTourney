@@ -1,6 +1,6 @@
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { getEventTypeDetailsWithEventId, getPaginatedParticipantsWithEventId } from "@/lib/services/EventService";
-import ParticipantManager from "./_components/ParticipantManager";
+import {ParticipantManager} from "./_components/ParticipantManager";
 
 const PAGE_SIZE = 10;
 
@@ -16,7 +16,7 @@ export default async function ParticipantRegistrationPage({
     return(
         <PageWrapper>
             <p>This is the participants page.</p>
-            <ParticipantManager eventId={eId} eventType={eventType} initialData={participants} allPlayers={[]}></ParticipantManager>
+            <ParticipantManager eventId={eId} eventType={eventType} allPlayers={[]}></ParticipantManager>
         </PageWrapper>
     )
 }
