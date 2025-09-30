@@ -18,21 +18,6 @@ const PlayerCell = ({
 }) => {
   return (
     <div className="flex items-center">
-      {/* <div className="h-11 w-11 flex-shrink-0">
-        <img
-          className="h-11 w-11 rounded-full object-cover"
-          src={player1?.profile_image_url || `https://api.dicebear.com/8.x/initials/svg?seed=${player1?.first_name}`}
-          alt={`${player1.first_name} ${player1.last_name}`}
-        />
-        
-        {player2 && (
-          <img
-            className="-ml-4 h-11 w-11 rounded-full object-cover ring-2 ring-white"
-            src={player2?.profile_image_url || `https://api.dicebear.com/8.x/initials/svg?seed=${player2?.first_name}`}
-            alt={`${player2.first_name} ${player2.last_name}`}
-          />
-        )}
-      </div> */}
       <div className="ml-4">
         <Link href={`/players/${player1.id}`} className="font-medium text-gray-900 hover:text-emerald-600">
           {player1.first_name} {player1.last_name}

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react';
 import { Button } from '@/components/utils/Button';
 import { PlayerBase } from '@/lib/types/api';
+import { PlayerInput } from './PlayerInput';
 
 interface AddParticipantModalProps{
     isOpen: boolean;
@@ -13,72 +14,93 @@ interface AddParticipantModalProps{
     allPlayers: PlayerBase[];
 }
 
-export function AddParticipantModal({ isOpen, onClose, isDoubles } : AddParticipantModalProps) {
-    const [mode, setMode] = useState<'existing' | 'new'>('existing');
+export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPlayers } : AddParticipantModalProps) {
+  const [formState, setFormState] = useState({
+    player1: { mode: 'existing', player_id: '' },
+    player2: { mode: 'existing', player_id: '' },
+    seed: '',
+    autoSeed: true,
+  });
 
-    const handleAdd = () => {
-        
-        alert('Adding participant (placeholder)');
-        onClose();
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const payload = {
+      event_id: eventId,
+      event_type: isDoubles ? 'doubles' : 'singles',
+      player1: formState.player1,
+      player2: isDoubles ? formState.player2 : undefined,
+      seed: formState.seed ? parseInt(formState.seed, 10) : undefined,
+      autoSeed: formState.autoSeed,
+      status: 'active'
     };
 
-    return (
-        <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-            <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-                <DialogPanel className="w-full max-w-md rounded-lg bg-white p-6">
-                    <DialogTitle className="text-lg font-semibold text-gray-900">
-                        Add {isDoubles ? 'Team' : 'Participant'}
-                    </DialogTitle>
+    alert('Payload logged to console. Ready for API integration.');
+    onClose();
+  };
 
-                    {/* Mode Toggle */}
-                    <div className="mt-4 border-b border-gray-200">
-                        <nav className="-mb-px flex space-x-6">
-                            <button onClick={() => setMode('existing')} className={`${mode === 'existing' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700'} whitespace-nowrap border-b-2 py-2 px-1 text-sm font-medium`}>
-                                Add Existing Player
-                            </button>
-                            <button onClick={() => setMode('new')} className={`${mode === 'new' ? 'border-emerald-500 text-emerald-600' : 'border-transparent text-gray-500 hover:text-gray-700'} whitespace-nowrap border-b-2 py-2 px-1 text-sm font-medium`}>
-                                Create New Player
-                            </button>
-                        </nav>
-                    </div>
+  return (
+    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+      <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+        <DialogPanel className="w-full max-w-lg rounded-lg bg-gray-50 p-6">
+          <DialogTitle className="text-lg font-semibold text-gray-900">
+            Add {isDoubles ? 'Team' : 'Participant'}
+          </DialogTitle>
 
-                    <div className="mt-6 space-y-4">
-                        {mode === 'existing' && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Select {isDoubles ? 'Player 1' : 'Player'}</label>
-                                <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                    {/* TODO: Populate with all players */}
-                                    <option>Existing Player 1</option>
-                                    <option>Existing Player 2</option>
-                                </select>
-                                {isDoubles && (
-                                   <div className="mt-4">
-                                     <label className="block text-sm font-medium text-gray-700">Select Player 2</label>
-                                     <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
-                                         <option>Existing Player A</option>
-                                         <option>Existing Player B</option>
-                                     </select>
-                                   </div>
-                                )}
-                            </div>
-                        )}
-                        {mode === 'new' && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">First Name</label>
-                                <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
-                                <label className="mt-2 block text-sm font-medium text-gray-700">Last Name</label>
-                                <input type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
-                            </div>
-                        )}
-                    </div>
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <PlayerInput
+              playerNumber={1}
+              allPlayers={allPlayers}
+              value={formState.player1}
+              onChange={(val) => setFormState(prev => ({ ...prev, player1: val }))}
+            />
 
-                    <div className="mt-6 flex justify-end space-x-3">
-                        <Button variant="secondary" onClick={onClose}>Cancel</Button>
-                        <Button onClick={handleAdd}>Add Participant</Button>
-                    </div>
-                </DialogPanel>
+            {isDoubles && (
+              <PlayerInput
+                playerNumber={2}
+                allPlayers={allPlayers}
+                value={formState.player2}
+                onChange={(val) => setFormState(prev => ({ ...prev, player2: val }))}
+              />
+            )}
+            
+            <div className="bg-white p-4 border rounded-md">
+              <div className="grid grid-cols-2 gap-4 items-end">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Seed (optional)</label>
+                  <input 
+                    type="number"
+                    value={formState.seed}
+                    onChange={(e) => setFormState(prev => ({ ...prev, seed: e.target.value, autoSeed: !e.target.value }))}
+                    disabled={formState.autoSeed}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 disabled:bg-gray-200"
+                  />
+                </div>
+                <div className="relative flex items-center">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="autoSeed"
+                      type="checkbox"
+                      checked={formState.autoSeed}
+                      onChange={(e) => setFormState(prev => ({ ...prev, autoSeed: e.target.checked, seed: '' }))}
+                      className="h-4 w-4 rounded border-gray-300 text-emerald-600"
+                    />
+                  </div>
+                  <div className="ml-3 text-sm">
+                    <label htmlFor="autoSeed" className="font-medium text-gray-900">Auto-seed</label>
+                  </div>
+                </div>
+              </div>
             </div>
-        </Dialog>
-    );
+
+            <div className="mt-6 flex justify-end space-x-3">
+              <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
+              <Button type="submit">Add Participant</Button>
+            </div>
+          </form>
+        </DialogPanel>
+      </div>
+    </Dialog>
+  );
 }

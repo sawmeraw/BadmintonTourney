@@ -12,7 +12,7 @@ export async function GET(
     try{
         const {eventId} = await params;
         const supabase = createClient();
-        console.log("event id passed: ", eventId);
+        // console.log("event id passed: ", eventId);
         const {searchParams} = new URL(request.url);
         const page = parseInt(searchParams.get('page') || '1', 10);
         const pageSize = parseInt(searchParams.get('pageSize') || String(PAGE_SIZE), 10);

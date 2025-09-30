@@ -1,7 +1,7 @@
 import { createClient } from "@/supabase/server";
 import { CreateEventPayload, CreateParticipantApiPayload, CreatePlayerPayload, UpdateEventPayload } from "../types/writes";
 import { EventType, Participant } from "@/supabase/queryTypes";
-import { ParticipantListApiResponse } from "../types/api";
+import { ParticipantListApiResponse, PlayerBase } from "../types/api";
 
 export async function getEventWithEventIdForEdit(eventId : string){
     const supabase = createClient();
@@ -152,7 +152,7 @@ export async function createParticipantsWithEventId(eventId: string, payload: Cr
     const player1_id = await resolvePlayer(player1);
     const player2_id = player2 ? await resolvePlayer(player2) : null;
 
-    if(autoSeed || !seed){
+    if( autoSeed || !seed){
         try{
             seed = await getNewSeedForEventId(eventId);
         } catch(error){
@@ -171,5 +171,16 @@ export async function createParticipantsWithEventId(eventId: string, payload: Cr
         })
     
     if (insertError) throw new Error("Failed to create participant.");
+}
+
+export async function getAllPlayers() : Promise<PlayerBase[]>{
+    const supabase = createClient();
+
+    const {data, error} = await (await supabase)
+        .from('players')
+        .select('id, first_name, last_name');
+    
+    if (error || !data) throw new Error("Error fetching players");
+    return data;
 }
 

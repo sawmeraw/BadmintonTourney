@@ -1,5 +1,5 @@
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { getEventTypeDetailsWithEventId, getPaginatedParticipantsWithEventId } from "@/lib/services/EventService";
+import { getAllPlayers, getEventTypeDetailsWithEventId, getPaginatedParticipantsWithEventId } from "@/lib/services/EventService";
 import {ParticipantManager} from "./_components/ParticipantManager";
 
 const PAGE_SIZE = 10;
@@ -10,13 +10,10 @@ export default async function ParticipantRegistrationPage({
     params: Promise<{tId: string, eId: string }>
 }){
     const {tId, eId} = await params;
-
-    const [participants, eventType] = await Promise.all([getPaginatedParticipantsWithEventId(eId, 1, PAGE_SIZE), getEventTypeDetailsWithEventId(eId)]);
-
+    const [eventType, allPlayers] = await Promise.all([getEventTypeDetailsWithEventId(eId), getAllPlayers()]);
     return(
         <PageWrapper>
-            <p>This is the participants page.</p>
-            <ParticipantManager eventId={eId} eventType={eventType} allPlayers={[]}></ParticipantManager>
+            <ParticipantManager eventId={eId} eventType={eventType} allPlayers={allPlayers}></ParticipantManager>
         </PageWrapper>
     )
 }

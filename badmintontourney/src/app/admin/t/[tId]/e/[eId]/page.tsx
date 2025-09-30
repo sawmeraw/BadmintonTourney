@@ -13,7 +13,8 @@ export default async function EditTournamentPage({
     const [event, event_types, templates] = await Promise.all([
         getEventWithEventIdForEdit(eId),
         getAllEventTypes(),
-        getAllTemplates()
+        getAllTemplates(),
+
     ]);
 
     if (!event) notFound();

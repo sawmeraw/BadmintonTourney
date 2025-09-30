@@ -11,7 +11,6 @@ const fetchParticipants = async (eventId :string, page: number, pageSize: number
 }
 
 export const useParticipants = (eventId: string, page: number, pageSize: number, initialData?: ParticipantListApiResponse) =>{
-
     const queryOptions = {
         queryKey: ['participants', eventId],
         queryFn: ()=> fetchParticipants(eventId, page, pageSize),

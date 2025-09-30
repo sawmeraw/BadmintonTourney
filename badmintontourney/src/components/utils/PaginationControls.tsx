@@ -20,7 +20,7 @@ export const PaginationControls = ({ totalCount, pageSize, currentPage }: Pagina
         router.push(`${pathname}?${params.toString()}`);
     };
 
-    if (totalPages <= 1) return null;
+    // if (totalPages <= 1) return null;
 
     return (
         <div className="mt-12 flex items-center justify-between">
