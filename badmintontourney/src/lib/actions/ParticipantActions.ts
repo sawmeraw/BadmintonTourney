@@ -54,8 +54,6 @@ export async function updateParticipantHandler(payload: UpdateParticipantPayload
             }
         }
     }
-
-    return {success: true, message: "Participants updated"};
 }
 
 export async function setSeedHandler(payload: UpdateSeedPayload){
@@ -66,12 +64,10 @@ export async function setSeedHandler(payload: UpdateSeedPayload){
 
     try{
         await updateParticipantSeed(validatedFields.data.event_id, validatedFields.data.participant_id, validatedFields.data.seed);
-
         revalidatePath(`/admin/t/`);
 
-        return {success: true, message: "Seed updated successfully."};
     } catch(error){
-        const message = error instanceof Error ? error?.message : "Seed needs to be unique for each participant";
-        return {success: false, message: message};
+        console.log(`Error has been caught in the handler ${error}`);
+        throw error;
     }
 }
