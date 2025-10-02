@@ -18,7 +18,6 @@ export const useUpdateParticipants = ()=>{
                 duration: 3000
             });
         }
-
     })
 }
 
@@ -29,6 +28,9 @@ export const useUpdateSeed = ()=>{
         mutationFn: setSeedHandler,
         onSuccess: ()=>{
             queryClient.invalidateQueries({queryKey: ['participants']});
+            // toast.success("Seed updated", {
+            //     duration: 3000
+            // });
         },
         onError: (error)=>{
             toast.error(error.message, {

@@ -43,7 +43,8 @@ export function ParticipantManagerUI({ eventType, allPlayers } : ParticipantMana
         totalCount, 
         page, 
         pageSize, 
-        isLoading, 
+        isLoading,
+        isUpdating,
         isError,
         selectedIds,
         handleSelectAll,
@@ -57,6 +58,11 @@ export function ParticipantManagerUI({ eventType, allPlayers } : ParticipantMana
 
     return (
         <>
+        {isUpdating && (
+            <div className="absolute inset-0 bg-white bg-opacity-60 flex items-center justify-center z-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
+            </div>
+        )}
             <div className="flex items-center justify-between my-6">
                 <h2 className="text-2xl font-semibold">Participant Roster ({totalCount})</h2>
                 <Button onClick={() => setIsModalOpen(true)}>+ Add Participant</Button>

@@ -19,7 +19,7 @@ export async function deleteParticipants(ids: string[]){
     const supabase = createClient();
     const {error} = await (await supabase)
         .from('event_participants')
-        .update({is_deleted: true})
+        .update({is_deleted: true, seed: null})
         .in('id', ids);
     
     if(error) throw new Error(error.message);
@@ -46,18 +46,6 @@ export async function setSeed(id: string, newSeed: number){
     console.log(error);
     if (error) throw error;
     
-}
-
-async function checkIfSeedCollides(eventId: string, seed: number){
-    const supabase = createClient();
-    const {data, error} =   await (await supabase)
-        .from('event_participants')
-        .select('seed')
-        .eq('event_id', eventId);
-    
-    if (error || !data) throw new Error("Failed to fetch seeds");
-    const seeds = data.map((row)=>(row.seed)).filter((s)=> typeof s === "number");
-    return seeds.includes(seed);
 }
 
 export async function updateParticipantSeed(eventId: string, participantId: string, newSeed: number | null){
