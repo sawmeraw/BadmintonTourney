@@ -72,7 +72,8 @@ export const ParticipantProvider = ({ eventId, children }: { eventId: string, ch
     }
 
     const removeSeedFromSelected = () => {
-        updateParticipant({ updates: selectedIds.map(id => ({ id, seed: null })) });
+        updateParticipant({ updates: selectedIds.map(id => ({ id, removeSeed: true })) });
+        setSelectedIds([]);
     };
 
     const value = {
