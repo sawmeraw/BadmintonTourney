@@ -1,10 +1,8 @@
-"use server";
 
 import { Participant } from "@/supabase/queryTypes";
 import { createClient } from "@/supabase/server";
-import { UpdateParticipantPayload } from "../types/writes";
 
-type ParticipantStatus = Participant["status"];
+export type ParticipantStatus = Participant["status"];
 
 export async function removeSeed(ids: string[]){
     const supabase = createClient();
@@ -37,51 +35,58 @@ export async function updateParticipantStatus(ids: string[], status: Participant
     if(error) throw new Error(error.message);
 }
 
-export async function updateParticipantHandler(payload: UpdateParticipantPayload){
-
-    let toDeleteIds: string[] = [];
-    let toRemoveSeedIds: string[] = [];
-    let statusUpdates: Record<ParticipantStatus, string[]> = {
-        "active" : [],
-        "disqualified": [],
-        "withdrawn": []
-    };
+export async function setSeed(id: string, newSeed: number){
+    const supabase = createClient();
     
-    for (const update of payload.updates){
-        if(update.isDeleted){
-            toDeleteIds.push(update.id);
-        }
-        if(update.removeSeed){
-            toRemoveSeedIds.push(update.id);
-        }
-        if(update.status){
-            statusUpdates[update.status].push(update.id);
+    const {error} = await (await supabase)
+        .from('event_participants')
+        .update({seed: newSeed})
+        .eq('id', id);
+    
+    console.log(error);
+    if (error) throw error;
+    
+}
+
+async function checkIfSeedCollides(eventId: string, seed: number){
+    const supabase = createClient();
+    const {data, error} =   await (await supabase)
+        .from('event_participants')
+        .select('seed')
+        .eq('event_id', eventId);
+    
+    if (error || !data) throw new Error("Failed to fetch seeds");
+    const seeds = data.map((row)=>(row.seed)).filter((s)=> typeof s === "number");
+    return seeds.includes(seed);
+}
+
+export async function updateParticipantSeed(eventId: string, participantId: string, newSeed: number | null){
+    const supabase = createClient();
+
+    if( newSeed !== null){
+        const {data: existingSeed, error: conflictError} = await (await supabase)
+            .from('event_participants')
+            .select('id')
+            .eq('event_id', eventId)
+            .eq('seed', newSeed)
+            .not('id', 'eq', participantId)
+            .maybeSingle();
+        
+        if(conflictError) throw new Error(conflictError.message);
+
+        if(existingSeed){
+            throw new Error(`Seed #${newSeed} is already taken in this event`);
         }
     }
 
-    if(toDeleteIds.length > 0){
-        try{
-            await deleteParticipants(toDeleteIds);
-        } catch(error){
-            throw error;
-        }
-    }
-    if(toRemoveSeedIds.length > 0){
-        try{
-            await removeSeed(toRemoveSeedIds);
-        } catch(error){
-            throw error;
-        }
-    }
+    const {data: updatedData, error: updateError} = await (await supabase)
+        .from('event_participants')
+        .update({seed: newSeed})
+        .eq('id', participantId)
+        .select()
+        .single();
 
-    for (const key of Object.keys(statusUpdates) as ParticipantStatus[]) {
-        const ids = statusUpdates[key];
-        if (ids.length > 0) {
-            try{
-                await updateParticipantStatus(ids, key);
-            } catch(error) {
-                throw error;
-            }
-        }
-    }
+    if (updateError) throw new Error(updateError.message);
+
+    return updatedData;
 }

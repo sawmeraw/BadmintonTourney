@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ReactQueryProvider } from "./providers";
+import { Toaster } from "react-hot-toast";
 import React from "react";
 
 
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={`${inter.className} bg-gray-50 text-gray-900`}>
         <div className="flex min-h-screen flex-col">
           <ReactQueryProvider>
+            <Toaster position="top-center"/>
             <Header />
             {children}
             <Footer />

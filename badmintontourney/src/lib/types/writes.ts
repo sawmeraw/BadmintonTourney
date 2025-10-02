@@ -144,17 +144,16 @@ export const updateParticipantsSchema = z.object({
       id: z.string(),
       status: z.enum(['active', 'withdrawn', 'disqualified']).optional(),
       removeSeed: z.boolean().optional(),
-      setSeed: z.number().int().nonnegative().optional().nullable(),
       isDeleted: z.boolean().optional(),
-    }).refine(
-      (data) => !(data.removeSeed && data.setSeed !== undefined),
-      {
-        message: 'Cannot set and remove seed at the same time',
-        path: ['setSeed'],
-      }
-    )
+    })
   ),
 });
+
+export const updateSeedSchema = z.object({
+  event_id: z.uuid(),
+  participant_id: z.uuid(),
+  seed: z.number().int().positive()
+})
 
 export type UpdateEventPayload = z.infer<typeof updateEventSchema>;
 export type CreateEventPayload = z.infer<typeof createEventSchema>;
@@ -162,3 +161,4 @@ export type UpdateFinalizedEventPayload = z.infer<typeof updateFinalizedEventSch
 export type CreateParticipantApiPayload = z.infer<typeof createParticipantApiSchema>;
 export type CreatePlayerPayload = z.infer<typeof createPlayerSchema>;
 export type UpdateParticipantPayload = z.infer<typeof updateParticipantsSchema>;
+export type UpdateSeedPayload = z.infer<typeof updateSeedSchema>;

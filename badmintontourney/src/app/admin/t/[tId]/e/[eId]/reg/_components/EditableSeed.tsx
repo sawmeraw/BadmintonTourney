@@ -1,7 +1,9 @@
 'use client';
 
-import { useUpdateParticipants } from '@/hooks/useUpdateParticipants';
+import { useUpdateSeed } from '@/hooks/useUpdateParticipants';
 import { useState, useEffect, useRef } from 'react';
+import { useParticipantContext } from '../_context/ParticipantManagerContext';
+import toast from 'react-hot-toast';
 
 interface EditableSeedProps {
   participantId: string;
@@ -12,7 +14,8 @@ interface EditableSeedProps {
 export const EditableSeed = ({ participantId, initialSeed }: EditableSeedProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [seedValue, setSeedValue] = useState(initialSeed?.toString() || '');
-  const {mutate: updateSeed, isPending} = useUpdateParticipants();
+  const {mutate: updateSeed, isPending, error: seedUpdateError} = useUpdateSeed();
+  const {eventId} = useParticipantContext();
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -24,12 +27,18 @@ export const EditableSeed = ({ participantId, initialSeed }: EditableSeedProps) 
 
   const handleSave = () => {
     const newSeed = seedValue === '' ? null : parseInt(seedValue, 10);
+    if(!newSeed){
+      toast.error("Please enter seed value to update.", {
+        duration: 3000
+      });
+      return;
+    }
+    updateSeed(eventId, participantId, newSeed);
     if (newSeed !== initialSeed) {
         updateSeed({
-            updates:[{
-                id: participantId,
-                setSeed: newSeed,
-            }]
+            event_id: eventId,
+            participant_id: participantId,
+            seed: newSeed
         })
     }
     setIsEditing(false);

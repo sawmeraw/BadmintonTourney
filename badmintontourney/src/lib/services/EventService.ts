@@ -1,3 +1,5 @@
+"use server";
+
 import { createClient } from "@/supabase/server";
 import { CreateEventPayload, CreateParticipantApiPayload, CreatePlayerPayload, UpdateEventPayload } from "../types/writes";
 import { EventType, Participant } from "@/supabase/queryTypes";
@@ -121,17 +123,7 @@ async function getNewSeedForEventId(eventId: string){
     return newSeed;
 }
 
-async function checkIfSeedCollides(eventId: string, seed: number){
-    const supabase = createClient();
-    const {data, error} =   await (await supabase)
-        .from('event_participants')
-        .select('seed')
-        .eq('event_id', eventId);
-    
-    if (error || !data) throw new Error("Failed to fetch seeds");
-    const seeds = data.map((row)=>(row.seed)).filter((s)=> typeof s === "number");
-    return seeds.includes(seed);
-}
+
 
 export async function createParticipantsWithEventId(eventId: string, payload: CreateParticipantApiPayload){
     const supabase = createClient();
