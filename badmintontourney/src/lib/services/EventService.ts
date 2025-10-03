@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@/supabase/server";
-import { CreateEventPayload, CreateParticipantApiPayload, CreatePlayerPayload, UpdateEventPayload } from "../types/writes";
-import { EventType, Participant } from "@/supabase/queryTypes";
+import { CreateEventPayload, UpdateEventPayload } from "../types/writes";
+import { EventType } from "@/supabase/queryTypes";
 import { ParticipantListApiResponse, PlayerBase } from "../types/api";
 
 export async function getEventWithEventIdForEdit(eventId : string){
@@ -97,73 +97,6 @@ export async function getPaginatedParticipantsWithEventId(eventId: string, page:
     };
 }
 
-export async function createPlayer(player: CreatePlayerPayload){
-    const supabase = createClient();
-
-    const {data, error} = await (await supabase)
-        .from('players')
-        .insert(player)
-        .select('id')
-        .single();
-    
-    if(!data || error) throw new Error("Error creating player");
-    return data.id;
-}
-
-async function getNewSeedForEventId(eventId: string){
-    const supabase = createClient();
-    const {data, error} =   await (await supabase)
-        .from('event_participants')
-        .select('seed')
-        .eq('event_id', eventId);
-    
-    if (error || !data) throw new Error("Failed to fetch seeds");
-    const seeds = data.map((row)=>(row.seed)).filter((s)=> typeof s === "number");
-    const newSeed = seeds.length > 0 ? Math.max(...seeds) + 1 : 1;
-    return newSeed;
-}
-
-
-
-export async function createParticipantsWithEventId(eventId: string, payload: CreateParticipantApiPayload){
-    const supabase = createClient();
-    let {player1, player2, event_id, seed, autoSeed, status} = payload;
-
-    const resolvePlayer = async (player: typeof player1) =>{
-        if(player.mode === "existing") return player.player_id;
-
-        try{
-            const id = await createPlayer({first_name: player.first_name, last_name: player.last_name, middle_name: player?.middle_name});
-            return id;
-        }
-        catch(error){
-            throw error;
-        }
-    }
-
-    const player1_id = await resolvePlayer(player1);
-    const player2_id = player2 ? await resolvePlayer(player2) : null;
-
-    if( autoSeed || !seed){
-        try{
-            seed = await getNewSeedForEventId(eventId);
-        } catch(error){
-            throw error;
-        }
-    }
-
-    const {error : insertError} = await (await supabase)
-        .from('event_participants')
-        .insert({
-            event_id: eventId,
-            player1_id: player1_id,
-            player2_id: player2_id,
-            status: status,
-            seed: seed,
-        })
-    
-    if (insertError) throw new Error("Failed to create participant.");
-}
 
 export async function getAllPlayers() : Promise<PlayerBase[]>{
     const supabase = createClient();
@@ -173,6 +106,20 @@ export async function getAllPlayers() : Promise<PlayerBase[]>{
         .select('id, first_name, last_name');
     
     if (error || !data) throw new Error("Error fetching players");
+    return data;
+}
+
+export async function getParticipantManagerConfigForEventId(eventId: string){
+    const supabase = createClient();
+
+    const {data, error} = await (await supabase)
+        .from('events')
+        .select('max_participants, current_entries, finalised_for_matches')
+        .eq('id', eventId)
+        .single();
+    
+    if (error || !data) throw new Error("Error fetching participant manager config");
+
     return data;
 }
 

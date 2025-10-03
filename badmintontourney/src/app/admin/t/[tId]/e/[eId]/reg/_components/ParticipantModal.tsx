@@ -12,9 +12,10 @@ interface AddParticipantModalProps{
     isDoubles: boolean;
     eventId: string;
     allPlayers: PlayerBase[];
+    registrationClosed: boolean;
 }
 
-export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPlayers } : AddParticipantModalProps) {
+export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPlayers, registrationClosed } : AddParticipantModalProps) {
   const [formState, setFormState] = useState({
     player1: { mode: 'existing', player_id: '' },
     player2: { mode: 'existing', player_id: '' },

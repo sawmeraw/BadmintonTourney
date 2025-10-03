@@ -1,7 +1,8 @@
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { getAllPlayers, getEventTypeDetailsWithEventId, getPaginatedParticipantsWithEventId } from "@/lib/services/EventService";
+import { getAllPlayers, getEventTypeDetailsWithEventId, getParticipantManagerConfigForEventId } from "@/lib/services/EventService";
 import {ParticipantManagerUI} from "./_components/ParticipantManager";
 import { ParticipantProvider } from "./_context/ParticipantManagerContext";
+import { isTournamentRegistrationClosed } from "@/lib/services/TournamentService";
 const PAGE_SIZE = 10;
 
 export default async function ParticipantRegistrationPage({
@@ -10,11 +11,17 @@ export default async function ParticipantRegistrationPage({
     params: Promise<{tId: string, eId: string }>
 }){
     const {tId, eId} = await params;
-    const [eventType, allPlayers] = await Promise.all([getEventTypeDetailsWithEventId(eId), getAllPlayers()]);
+    const [eventType, allPlayers, config, tournamentRegistrationClosed] = await Promise.all([getEventTypeDetailsWithEventId(eId), getAllPlayers(), getParticipantManagerConfigForEventId(eId), isTournamentRegistrationClosed(tId)]);
+    const eventConfig = {
+        ...config,
+        ...eventType,
+        tournamentRegistrationClosed
+    }
+
     return(
         <PageWrapper>
             <ParticipantProvider eventId={eId}>
-                <ParticipantManagerUI eventType={eventType} allPlayers={allPlayers}></ParticipantManagerUI>
+                <ParticipantManagerUI eventConfig={eventConfig} allPlayers={allPlayers}></ParticipantManagerUI>
             </ParticipantProvider>
         </PageWrapper>
     )

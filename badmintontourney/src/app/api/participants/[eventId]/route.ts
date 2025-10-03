@@ -1,4 +1,4 @@
-import { createParticipantsWithEventId } from "@/lib/services/EventService";
+
 import { createParticipantApiSchema } from "@/lib/types/writes";
 import { createClient } from "@/supabase/server";
 import { NextResponse } from "next/server";
@@ -37,23 +37,23 @@ export async function GET(
     }
 }
 
-export async function POST(request: Request, {params} : {params: {eventId: string}}){
+// export async function POST(request: Request, {params} : {params: {eventId: string}}){
 
-    const body = await request.json();
-    const {eventId} = await params;
-    const validatedFields = createParticipantApiSchema.safeParse(body);
-    if (!validatedFields.success){
-        console.log(validatedFields.error.flatten());
-        return NextResponse.json({error: validatedFields.error.message}, {status:400});
-    }
+//     const body = await request.json();
+//     const {eventId} = await params;
+//     const validatedFields = createParticipantApiSchema.safeParse(body);
+//     if (!validatedFields.success){
+//         console.log(validatedFields.error.flatten());
+//         return NextResponse.json({error: validatedFields.error.message}, {status:400});
+//     }
 
-    const data = validatedFields.data;
-    try{
-        await createParticipantsWithEventId(eventId, data);
-    } catch(error){
-        const message = error instanceof Error ? error.message : String(error);
-        return NextResponse.json({error: message}, {status:500});
-    }
+//     const data = validatedFields.data;
+//     try{
+//         await createParticipantsWithEventId(eventId, data);
+//     } catch(error){
+//         const message = error instanceof Error ? error.message : String(error);
+//         return NextResponse.json({error: message}, {status:500});
+//     }
 
-    return NextResponse.json({status: 200});
-}
+//     return NextResponse.json({status: 200});
+// }

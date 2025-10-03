@@ -7,6 +7,8 @@ import { ParticipantRow } from './ParticipantRow';
 import { PaginationControls } from '@/components/utils/PaginationControls';
 import { PlayerBase } from '@/lib/types/api';
 import { BulkActionBar } from './BulkActionBar';
+import { Tooltip } from '@/components/utils/Tooltip';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { useParticipantContext } from '../_context/ParticipantManagerContext';
 
 const TableSkeleton = () => (
@@ -30,13 +32,23 @@ const TableSkeleton = () => (
 );
 
 export interface ParticipantManagerUIProps {
-  eventType: {
-    is_doubles: boolean;
-  };
-  allPlayers: PlayerBase[];
+    eventConfig: {
+        tournamentRegistrationClosed: boolean;
+        age_lower_limit: number | null;
+        age_upper_limit: number | null;
+        created_at: string;
+        id: string;
+        is_doubles: boolean;
+        name: string;
+        updated_at: string;
+        max_participants: number | null;
+        current_entries: number | null;
+        finalised_for_matches: boolean | null;
+    };
+    allPlayers: PlayerBase[];
 }
 
-export function ParticipantManagerUI({ eventType, allPlayers } : ParticipantManagerUIProps) {
+export function ParticipantManagerUI({ eventConfig, allPlayers } : ParticipantManagerUIProps) {
     const {
         eventId,
         participants, 
@@ -65,7 +77,25 @@ export function ParticipantManagerUI({ eventType, allPlayers } : ParticipantMana
         )}
             <div className="flex items-center justify-between my-6">
                 <h2 className="text-2xl font-semibold">Participant Roster ({totalCount})</h2>
-                <Button onClick={() => setIsModalOpen(true)}>+ Add Participant</Button>
+                {eventConfig.max_participants === eventConfig.current_entries ? (
+                    eventConfig.tournamentRegistrationClosed ? (
+                        <div className="flex gap-2 items-center">
+                        <Tooltip message="Registration is closed on tournament level">
+                            <InformationCircleIcon className="h-8 w-8 text-emerald-500 cursor-pointer hover:text-emerald-700 duration-300" />
+                        </Tooltip>
+                        <Button variant="secondary" disabled>Registration Closed</Button>
+                        </div>
+                    ) : (
+                        <div className="flex gap-2 items-center">
+                        <Tooltip message="Current entries have reached max participants set for the event">
+                            <InformationCircleIcon className="h-8 w-8 text-yellow-500 cursor-pointer hover:text-emerald-700 duration-300" />
+                        </Tooltip>
+                        <Button variant="secondary" disabled>Max Participants Reached</Button>
+                        </div>
+                    )
+                    ) : (
+                    <Button onClick={() => setIsModalOpen(true)}>+ Add Participant</Button>
+                )}
             </div>
 
             <div className="relative bg-white rounded-lg shadow-sm border border-gray-200">
@@ -108,8 +138,9 @@ export function ParticipantManagerUI({ eventType, allPlayers } : ParticipantMana
                 eventId={eventId}
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                isDoubles={eventType.is_doubles}
+                isDoubles={eventConfig.is_doubles}
                 allPlayers={allPlayers}
+                registrationClosed={eventConfig.tournamentRegistrationClosed}
             />
         </>
     );

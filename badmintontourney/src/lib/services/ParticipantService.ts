@@ -1,6 +1,7 @@
 
 import { Participant } from "@/supabase/queryTypes";
 import { createClient } from "@/supabase/server";
+import { CreatePlayerPayload } from "../types/writes";
 
 export type ParticipantStatus = Participant["status"];
 
@@ -17,12 +18,24 @@ export async function removeSeed(ids: string[]){
 
 export async function deleteParticipants(ids: string[]){
     const supabase = createClient();
-    const {error} = await (await supabase)
+    const {data, error} = await (await supabase)
         .from('event_participants')
         .update({is_deleted: true, seed: null})
-        .in('id', ids);
+        .in('id', ids)
+        .select('event_id');
     
     if(error) throw new Error(error.message);
+    
+    if (data !== null){
+        const eventId = data[0].event_id;
+        const {error} = await (await supabase)
+            .rpc('decrement_current_entries', {
+                event_id_input: eventId,
+                count_input: data.length,
+            });
+        
+        if (error) throw new Error("Couldn't update current entries for the event.")
+    }
 }
 
 export async function updateParticipantStatus(ids: string[], status: ParticipantStatus){
@@ -33,6 +46,32 @@ export async function updateParticipantStatus(ids: string[], status: Participant
         .in('id', ids);
     
     if(error) throw new Error(error.message);
+}
+
+async function getNewSeedForEventId(eventId: string){
+    const supabase = createClient();
+    const {data, error} =   await (await supabase)
+        .from('event_participants')
+        .select('seed')
+        .eq('event_id', eventId);
+    
+    if (error || !data) throw new Error("Failed to fetch seeds");
+    const seeds = data.map((row)=>(row.seed)).filter((s)=> typeof s === "number");
+    const newSeed = seeds.length > 0 ? Math.max(...seeds) + 1 : 1;
+    return newSeed;
+}
+
+export async function createPlayer(player: CreatePlayerPayload){
+    const supabase = createClient();
+
+    const {data, error} = await (await supabase)
+        .from('players')
+        .insert(player)
+        .select('id')
+        .single();
+    
+    if(!data || error) throw new Error("Error creating player");
+    return data.id;
 }
 
 export async function setSeed(id: string, newSeed: number){

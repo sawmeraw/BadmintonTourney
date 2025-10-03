@@ -48,3 +48,16 @@ export const createTournament = async(payload : CreateTournamentPayload): Promis
     if (error) throw new Error(error.message);
     return data?.id;
 }
+
+export async function isTournamentRegistrationClosed(id: string){
+    const supabase = createClient();
+
+    const {data, error} = await (await supabase)
+    .from('tournaments')
+    .select('is_registration_closed')
+    .eq('id', id)
+    .single();
+
+    if (error || !data) throw new Error(error.message);
+    return data.is_registration_closed || false;
+}
