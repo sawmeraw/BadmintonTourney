@@ -15,7 +15,7 @@ export const PlayerInput = ({
   onChange: (value: any) => void;
 }) => {
   const [mode, setMode] = useState<'existing' | 'new'>('existing');
-  const inputClassName = "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5";
+  const inputClassName = "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5";
 
   const handleModeChange = (newMode: 'existing' | 'new') => {
     setMode(newMode);
@@ -23,7 +23,7 @@ export const PlayerInput = ({
   };
 
   return (
-    <div className="rounded-md border border-gray-200 bg-white p-4">
+    <div className="bg-white p-4">
       <label className="block text-sm font-medium text-gray-700 mb-2">Player {playerNumber}</label>
       <div className="flex items-center gap-4 mb-4 border-b pb-3">
         <button type="button" onClick={() => handleModeChange('existing')} className={`text-sm ${mode === 'existing' ? 'font-semibold text-emerald-600' : 'text-gray-500'}`}>

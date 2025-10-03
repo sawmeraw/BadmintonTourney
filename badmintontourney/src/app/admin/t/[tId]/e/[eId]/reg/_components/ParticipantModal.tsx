@@ -56,12 +56,12 @@ export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPl
             </TransitionChild>
             <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
               <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                  <DialogTitle className="text-lg font-semibold text-gray-900">
+                <div className="bg-white pt-5">
+                  <DialogTitle className="text-xl font-semibold text-gray-900 px-4">
                     Add {isDoubles ? 'Team' : 'Participant'}
                   </DialogTitle>
 
-                  <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                  <form onSubmit={handleSubmit} className="mt-2">
                     <PlayerInput
                       playerNumber={1}
                       allPlayers={allPlayers}
@@ -78,16 +78,17 @@ export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPl
                       />
                     )}
                     
-                    <div className="bg-white p-4 border rounded-md">
+                    <div className="bg-gray-200 p-4 rounded-md">
                       <div className="grid grid-cols-2 gap-4 items-end">
                         <div>
                           <label className="block text-sm font-medium text-gray-700">Seed (optional)</label>
+                          <span className="text-xs">Either set manually or autoseed.</span>
                           <input 
                             type="number"
                             value={formState.seed}
                             onChange={(e) => setFormState(prev => ({ ...prev, seed: e.target.value, autoSeed: !e.target.value }))}
                             disabled={formState.autoSeed}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5 disabled:bg-gray-200"
+                            className="bg-gray-50 border mt-2 border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 disabled:bg-gray-200"
                           />
                         </div>
                         <div className="relative flex items-center">
@@ -107,9 +108,9 @@ export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPl
                       </div>
                     </div>
 
-                    <div className="mt-6 flex justify-end space-x-3">
+                    <div className="flex justify-end bg-gray-50 space-x-4 px-4 py-2">
                       <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
-                      <Button type="submit">Add Participant</Button>
+                      <Button type="submit">Confirm</Button>
                     </div>
                   </form>
                 </div>
