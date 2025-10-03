@@ -18,6 +18,8 @@ export default async function ParticipantRegistrationPage({
         tournamentRegistrationClosed
     }
 
+    console.log(eventConfig);
+
     return(
         <PageWrapper>
             <ParticipantProvider eventId={eId}>

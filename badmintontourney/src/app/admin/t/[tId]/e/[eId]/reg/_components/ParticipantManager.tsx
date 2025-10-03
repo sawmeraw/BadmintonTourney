@@ -77,25 +77,25 @@ export function ParticipantManagerUI({ eventConfig, allPlayers } : ParticipantMa
         )}
             <div className="flex items-center justify-between my-6">
                 <h2 className="text-2xl font-semibold">Participant Roster ({totalCount})</h2>
-                {eventConfig.max_participants === eventConfig.current_entries ? (
-                    eventConfig.tournamentRegistrationClosed ? (
-                        <div className="flex gap-2 items-center">
-                        <Tooltip message="Registration is closed on tournament level">
+                {eventConfig.tournamentRegistrationClosed || eventConfig.finalised_for_matches ? (
+                    <div className="flex gap-2 items-center">
+                        <Tooltip message="Registration is closed on tournament level or matches have been created">
                             <InformationCircleIcon className="h-8 w-8 text-emerald-500 cursor-pointer hover:text-emerald-700 duration-300" />
                         </Tooltip>
                         <Button variant="secondary" disabled>Registration Closed</Button>
-                        </div>
-                    ) : (
-                        <div className="flex gap-2 items-center">
+                    </div>
+                    ) : eventConfig.max_participants !== null &&
+                    eventConfig.current_entries !== null &&
+                    eventConfig.current_entries >= eventConfig.max_participants ? (
+                    <div className="flex gap-2 items-center">
                         <Tooltip message="Current entries have reached max participants set for the event">
                             <InformationCircleIcon className="h-8 w-8 text-yellow-500 cursor-pointer hover:text-emerald-700 duration-300" />
                         </Tooltip>
                         <Button variant="secondary" disabled>Max Participants Reached</Button>
-                        </div>
-                    )
+                    </div>
                     ) : (
                     <Button onClick={() => setIsModalOpen(true)}>+ Add Participant</Button>
-                )}
+                    )}
             </div>
 
             <div className="relative bg-white rounded-lg shadow-sm border border-gray-200">
