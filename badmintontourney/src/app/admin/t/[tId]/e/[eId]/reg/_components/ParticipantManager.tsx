@@ -12,13 +12,13 @@ import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { useParticipantContext } from '../_context/ParticipantManagerContext';
 
 const TableSkeleton = () => (
-    <div className="animate-pulse">
+    <div className="animate-pulse my-6">
         <div className="flex justify-between items-center mb-6">
             <div className="h-10 bg-gray-200 rounded-md w-1/4"></div>
             <div className="h-10 bg-gray-200 rounded-md w-32"></div>
         </div>
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
-        {[...Array(5)].map((_, i) => (
+        {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center justify-between py-2">
                 <div className="flex items-center space-x-4">
                     <div className="h-11 w-11 rounded-full bg-gray-200"></div>
@@ -140,7 +140,6 @@ export function ParticipantManagerUI({ eventConfig, allPlayers } : ParticipantMa
                 onClose={() => setIsModalOpen(false)}
                 isDoubles={eventConfig.is_doubles}
                 allPlayers={allPlayers}
-                registrationClosed={eventConfig.tournamentRegistrationClosed}
             />
         </>
     );

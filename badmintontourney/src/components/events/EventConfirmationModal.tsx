@@ -21,8 +21,6 @@ export default function EventConfirmationModal({
     const byes = maxParticipants - currentEntries;
     let byeWarning : string = `For straight knockout, it will create ${byes} byes.`;
 
-    
-
     if(maxParticipants)
     return(
         <ConfirmationModal 

@@ -3,7 +3,6 @@ import { getAllPlayers, getEventTypeDetailsWithEventId, getParticipantManagerCon
 import {ParticipantManagerUI} from "./_components/ParticipantManager";
 import { ParticipantProvider } from "./_context/ParticipantManagerContext";
 import { isTournamentRegistrationClosed } from "@/lib/services/TournamentService";
-const PAGE_SIZE = 10;
 
 export default async function ParticipantRegistrationPage({
     params
@@ -18,7 +17,7 @@ export default async function ParticipantRegistrationPage({
         tournamentRegistrationClosed
     }
 
-    console.log(eventConfig);
+    // console.log(eventConfig);
 
     return(
         <PageWrapper>

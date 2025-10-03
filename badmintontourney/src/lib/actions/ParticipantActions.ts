@@ -1,7 +1,7 @@
 "use server";
 
 import { UpdateParticipantPayload, UpdateSeedPayload, updateSeedSchema } from "../types/writes";
-import { deleteParticipants, removeSeed, setSeed, updateParticipantSeed, updateParticipantStatus, type ParticipantStatus } from "../services/ParticipantService";
+import { deleteParticipants, removeSeed, updateParticipantSeed, updateParticipantStatus, type ParticipantStatus } from "../services/ParticipantService";
 import { revalidatePath } from "next/cache";
 
 export async function updateParticipantHandler(payload: UpdateParticipantPayload){

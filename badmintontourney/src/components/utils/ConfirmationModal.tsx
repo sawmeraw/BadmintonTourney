@@ -26,8 +26,8 @@ export const ConfirmationModal = ({
 }: ConfirmationModalProps) =>{
     return (
         <Transition show={isOpen} as={Fragment}>
-            <Dialog as="div" className="absolute top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2" onClose={onClose}>
-            <div className="fixed inset-0 bg-black-50" aria-hidden="true"></div>
+            <Dialog as="div" className="relative top-1/2 left-1/2 z-50" onClose={onClose}>
+            
                 <TransitionChild 
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -37,6 +37,19 @@ export const ConfirmationModal = ({
                     leaveFrom="opacity-200"
                     leaveTo="opacity-0"
                     >
+                        <div className="fixed inset-0 bg-black/50" aria-hidden="true"></div>
+                </TransitionChild>
+
+                <TransitionChild 
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-200"
+                    leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
                         <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                             <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                 <div className="sm:flex sm:items-start">
@@ -71,6 +84,7 @@ export const ConfirmationModal = ({
                                 </Button>
                                 </div>
                         </DialogPanel>
+                    </div>
                 </TransitionChild>
             </Dialog>
         </Transition>

@@ -113,7 +113,6 @@ export const createParticipantApiSchema = z.object({
   player2: playerSchema.optional(),
   seed: z.number().int().nonnegative().optional(),
   autoSeed: z.boolean(),
-  status: participantStatusOptions,
   event_id: z.string()
 }).refine(data =>{
   if(data.event_type == "doubles"){

@@ -20,7 +20,6 @@ interface ParticipantContextType {
     handleSelectAll: (e: React.ChangeEvent<HTMLInputElement>) => void;
     areAllSelected: boolean;
     disableBulkUnseed: boolean;
-    //functions
     deleteSelected: () => void;
     deleteSingle: (id: string)=>void;
     removeSeedFromSelected: () => void;
@@ -29,7 +28,7 @@ interface ParticipantContextType {
 
 const ParticipantContext = createContext<ParticipantContextType | undefined>(undefined);
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 15;
 
 export const ParticipantProvider = ({ eventId, children }: { eventId: string, children: ReactNode }) => {
     const searchParams = useSearchParams();
@@ -59,6 +58,7 @@ export const ParticipantProvider = ({ eventId, children }: { eventId: string, ch
     const deleteSelected = () => {
         if (window.confirm(`Are you sure you want to delete ${selectedIds.length} participant(s)?`)) {
             updateParticipant({ event_id: eventId, updates: selectedIds.map(id => ({ id, isDeleted: true })) });
+            setSelectedIds([]);
         }
     };
 
@@ -70,6 +70,7 @@ export const ParticipantProvider = ({ eventId, children }: { eventId: string, ch
                 isDeleted: true,
             }]
         })
+        
     }
 
     const removeSeedFromSelected = () => {
