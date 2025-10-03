@@ -16,26 +16,26 @@ export async function removeSeed(ids: string[]){
     if(error) throw new Error(error.message);
 }
 
-export async function deleteParticipants(ids: string[]){
+export async function deleteParticipants(eventId: string, participantIds: string[]){
     const supabase = createClient();
     const {data, error} = await (await supabase)
         .from('event_participants')
         .update({is_deleted: true, seed: null})
-        .in('id', ids)
-        .select('event_id');
+        .in('id', participantIds);
     
     if(error) throw new Error(error.message);
     
-    if (data !== null){
-        const eventId = data[0].event_id;
-        const {error} = await (await supabase)
-            .rpc('decrement_current_entries', {
-                event_id_input: eventId,
-                count_input: data.length,
-            });
+    const {error: decrementError} = await (await supabase)
+        .rpc('decrement_current_entries', {
+            event_id_input: eventId,
+            count_input: participantIds.length,
+        });
         
-        if (error) throw new Error("Couldn't update current entries for the event.")
+    if (decrementError) {
+        console.log(decrementError)
+        throw new Error("Couldn't update current entries for the event.")
     }
+    
 }
 
 export async function updateParticipantStatus(ids: string[], status: ParticipantStatus){

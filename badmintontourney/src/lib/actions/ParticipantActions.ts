@@ -5,8 +5,6 @@ import { deleteParticipants, removeSeed, setSeed, updateParticipantSeed, updateP
 import { revalidatePath } from "next/cache";
 
 export async function updateParticipantHandler(payload: UpdateParticipantPayload){
-    // console.log(payload);
-
     let toDeleteIds: string[] = [];
     let toRemoveSeedIds: string[] = [];
     let statusUpdates: Record<ParticipantStatus, string[]> = {
@@ -14,8 +12,6 @@ export async function updateParticipantHandler(payload: UpdateParticipantPayload
         "disqualified": [],
         "withdrawn": []
     };
-
-    // console.log(`To remove seeds: ${toRemoveSeedIds}`);
     
     for (const update of payload.updates){
         if(update.isDeleted){
@@ -31,7 +27,7 @@ export async function updateParticipantHandler(payload: UpdateParticipantPayload
 
     if(toDeleteIds.length > 0){
         try{
-            await deleteParticipants(toDeleteIds);
+            await deleteParticipants(payload.event_id, toDeleteIds);
         } catch(error){
             throw error;
         }

@@ -139,6 +139,7 @@ export const createPlayerSchema = z.object({
 });
 
 export const updateParticipantsSchema = z.object({
+  event_id: z.uuid(),
   updates: z.array(
     z.object({
       id: z.string(),

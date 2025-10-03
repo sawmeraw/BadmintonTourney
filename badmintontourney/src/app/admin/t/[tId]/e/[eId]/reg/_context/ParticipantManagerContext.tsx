@@ -58,12 +58,13 @@ export const ParticipantProvider = ({ eventId, children }: { eventId: string, ch
     
     const deleteSelected = () => {
         if (window.confirm(`Are you sure you want to delete ${selectedIds.length} participant(s)?`)) {
-            updateParticipant({ updates: selectedIds.map(id => ({ id, isDeleted: true })) });
+            updateParticipant({ event_id: eventId, updates: selectedIds.map(id => ({ id, isDeleted: true })) });
         }
     };
 
     const deleteSingleWithId = (id: string)=>{
         updateParticipant({
+            event_id: eventId,
             updates: [{
                 id: id,
                 isDeleted: true,
@@ -72,7 +73,7 @@ export const ParticipantProvider = ({ eventId, children }: { eventId: string, ch
     }
 
     const removeSeedFromSelected = () => {
-        updateParticipant({ updates: selectedIds.map(id => ({ id, removeSeed: true })) });
+        updateParticipant({ event_id: eventId, updates: selectedIds.map(id => ({ id, removeSeed: true })) });
         setSelectedIds([]);
     };
 
