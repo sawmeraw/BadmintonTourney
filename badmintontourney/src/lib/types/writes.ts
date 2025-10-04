@@ -107,11 +107,10 @@ const playerSchema = z.discriminatedUnion('mode', [
   existingPlayerSchema, newPlayerSchema
 ]);
 
-export const createParticipantApiSchema = z.object({
+export const createParticipantSchema = z.object({
   event_type: z.enum(["singles", "doubles"]),
   player1: playerSchema,
   player2: playerSchema.optional(),
-  seed: z.number().int().nonnegative().optional(),
   autoSeed: z.boolean(),
   event_id: z.string()
 }).refine(data =>{
@@ -158,7 +157,7 @@ export const updateSeedSchema = z.object({
 export type UpdateEventPayload = z.infer<typeof updateEventSchema>;
 export type CreateEventPayload = z.infer<typeof createEventSchema>;
 export type UpdateFinalizedEventPayload = z.infer<typeof updateFinalizedEventSchema>;
-export type CreateParticipantApiPayload = z.infer<typeof createParticipantApiSchema>;
+export type CreateParticipantPayload = z.infer<typeof createParticipantSchema>;
 export type CreatePlayerPayload = z.infer<typeof createPlayerSchema>;
 export type UpdateParticipantPayload = z.infer<typeof updateParticipantsSchema>;
 export type UpdateSeedPayload = z.infer<typeof updateSeedSchema>;

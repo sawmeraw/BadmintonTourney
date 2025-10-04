@@ -1,7 +1,7 @@
 
 import { Participant } from "@/supabase/queryTypes";
 import { createClient } from "@/supabase/server";
-import { CreatePlayerPayload } from "../types/writes";
+import { CreateParticipantPayload, CreatePlayerPayload } from "../types/writes";
 
 export type ParticipantStatus = Participant["status"];
 
@@ -116,4 +116,55 @@ export async function updateParticipantSeed(eventId: string, participantId: stri
     if (updateError) throw new Error(updateError.message);
 
     return updatedData;
+}
+
+export async function createParticipant(eventId: string, payload: CreateParticipantPayload) {
+    const supabase = createClient();
+    const { player1, player2, event_type, autoSeed } = payload;
+    let newSeed: number | null = null;
+
+    if (event_type === "doubles" && !player2) {
+        throw new Error("Player 2 is needed for doubles");
+    }
+
+    let player1Id: string;
+    let player2Id: string | null = null;
+
+    if (player1.mode === "existing") {
+        player1Id = player1.player_id;
+    } else {
+        player1Id = await createPlayer({
+        first_name: player1.first_name,
+        last_name: player1.last_name,
+        middle_name: player1.middle_name ?? null,
+        });
+    }
+
+    if (player2) {
+        if (player2.mode === "existing") {
+        player2Id = player2.player_id;
+        } else {
+        player2Id = await createPlayer({
+            first_name: player2.first_name,
+            last_name: player2.last_name,
+            middle_name: player2.middle_name ?? null,
+        });
+        }
+    }
+
+    if (autoSeed) {
+        newSeed = await getNewSeedForEventId(eventId);
+    }
+
+    const {error} = await (await supabase)
+        .from("event_participants")
+        .insert({
+        event_id: eventId,
+        player1_id: player1Id,
+        player2_id: player2Id,
+        status: "active",
+        seed: newSeed,
+        });
+    
+    if(error) throw error;
 }

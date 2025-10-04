@@ -5,6 +5,7 @@ import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@
 import { Button } from '@/components/utils/Button';
 import { PlayerBase } from '@/lib/types/api';
 import { PlayerInput } from './PlayerInput';
+import { CreateParticipantPayload } from '@/lib/types/writes';
 
 interface AddParticipantModalProps{
     isOpen: boolean;
@@ -15,11 +16,12 @@ interface AddParticipantModalProps{
 }
 
 export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPlayers } : AddParticipantModalProps) {
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<CreateParticipantPayload>({
     player1: { mode: 'existing', player_id: '' },
     player2: { mode: 'existing', player_id: '' },
-    seed: '',
     autoSeed: true,
+    event_type: isDoubles ? "doubles" : "singles",
+    event_id: eventId
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -30,7 +32,6 @@ export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPl
       event_type: isDoubles ? 'doubles' : 'singles',
       player1: formState.player1,
       player2: isDoubles ? formState.player2 : undefined,
-      seed: formState.seed ? parseInt(formState.seed, 10) : undefined,
       autoSeed: formState.autoSeed,
       status: 'active'
     };
@@ -80,17 +81,7 @@ export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPl
                     
                     <div className="bg-gray-200 p-4 rounded-md">
                       <div className="grid grid-cols-2 gap-4 items-end">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Seed (optional)</label>
-                          <span className="text-xs">Either set manually or autoseed.</span>
-                          <input 
-                            type="number"
-                            value={formState.seed}
-                            onChange={(e) => setFormState(prev => ({ ...prev, seed: e.target.value, autoSeed: !e.target.value }))}
-                            disabled={formState.autoSeed}
-                            className="bg-gray-50 border mt-2 border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 disabled:bg-gray-200"
-                          />
-                        </div>
+                        
                         <div className="relative flex items-center">
                           <div className="flex h-6 items-center">
                             <input
@@ -101,8 +92,8 @@ export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPl
                               className="h-4 w-4 rounded border-gray-300 text-emerald-600"
                             />
                           </div>
-                          <div className="ml-3 text-sm">
-                            <label htmlFor="autoSeed" className="font-medium text-gray-900">Auto-seed</label>
+                          <div className="ml-3 text-sm whitespace-nowrap">
+                            <label htmlFor="autoSeed" className="font-medium text-gray-900">Auto-seed <span className='text-xs font-normal'>{`(Uncheck if manually seeding later)`}</span></label>
                           </div>
                         </div>
                       </div>
