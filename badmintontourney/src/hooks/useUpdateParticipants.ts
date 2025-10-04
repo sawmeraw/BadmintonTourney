@@ -1,4 +1,4 @@
-import { updateParticipantHandler, setSeedHandler } from "@/lib/actions/ParticipantActions";
+import { updateParticipantHandler, setSeedHandler, createParticipantHandler } from "@/lib/actions/ParticipantActions";
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import toast from "react-hot-toast";
 
@@ -36,6 +36,25 @@ export const useUpdateSeed = ()=>{
             toast.error(error.message, {
                 duration: 3000,
             });
+        }
+    })
+}
+
+export const useCreateParticipant = ()=>{
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: createParticipantHandler,
+        onSuccess: ()=>{
+            queryClient.invalidateQueries({queryKey: ['participants']});
+            toast.success("Participant created",{
+                duration: 3000
+            });
+        },
+        onError: (error)=>{
+            toast.error(error.message,{
+                duration: 4000
+            })
         }
     })
 }

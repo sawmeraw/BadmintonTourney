@@ -1,11 +1,12 @@
 'use client';
 
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useSyncExternalStore } from 'react';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { Button } from '@/components/utils/Button';
 import { PlayerBase } from '@/lib/types/api';
 import { PlayerInput } from './PlayerInput';
 import { CreateParticipantPayload } from '@/lib/types/writes';
+import { useCreateParticipant } from '@/hooks/useUpdateParticipants';
 
 interface AddParticipantModalProps{
     isOpen: boolean;
@@ -24,19 +25,20 @@ export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPl
     event_id: eventId
   });
 
+  const {mutate: createParticipant, error, isPending, isSuccess} =  useCreateParticipant();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const payload = {
+    const payload : CreateParticipantPayload = {
       event_id: eventId,
       event_type: isDoubles ? 'doubles' : 'singles',
       player1: formState.player1,
       player2: isDoubles ? formState.player2 : undefined,
       autoSeed: formState.autoSeed,
-      status: 'active'
     };
 
-    alert('Payload logged to console. Ready for API integration.');
+    createParticipant(payload);
     onClose();
   };
 

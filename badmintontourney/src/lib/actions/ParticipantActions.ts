@@ -1,7 +1,7 @@
 "use server";
 
-import { CreateParticipantPayload, UpdateParticipantPayload, UpdateSeedPayload, updateSeedSchema } from "../types/writes";
-import { deleteParticipants, removeSeed, updateParticipantSeed, updateParticipantStatus, type ParticipantStatus } from "../services/ParticipantService";
+import { CreateParticipantPayload, createParticipantSchema, UpdateParticipantPayload, UpdateSeedPayload, updateSeedSchema } from "../types/writes";
+import { createParticipant, deleteParticipants, removeSeed, updateParticipantSeed, updateParticipantStatus, type ParticipantStatus } from "../services/ParticipantService";
 import { revalidatePath } from "next/cache";
 
 export async function updateParticipantHandler(payload: UpdateParticipantPayload){
@@ -63,11 +63,22 @@ export async function setSeedHandler(payload: UpdateSeedPayload){
         revalidatePath(`/admin/t/`);
 
     } catch(error){
-        console.log(`Error has been caught in the handler ${error}`);
+        // console.log(`Error has been caught in the handler ${error}`);
         throw error;
     }
 }
 
 export async function createParticipantHandler(payload: CreateParticipantPayload){
-    
+    const validatedFields = createParticipantSchema.safeParse(payload);
+    if(!validatedFields.success){
+        throw new Error("Validation failed")
+    }
+
+    try{
+        await createParticipant(payload.event_id, payload);
+    } catch(error){
+        throw error;
+    }
+
+    revalidatePath(`/admin/t`)
 }

@@ -21,3 +21,4 @@ export const useParticipants = (eventId: string, page: number, pageSize: number,
         ...(page === 1 && initialData ? initialData : {})
     });
 }
+
