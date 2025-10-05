@@ -10,6 +10,7 @@ import { BulkActionBar } from './BulkActionBar';
 import { Tooltip } from '@/components/utils/Tooltip';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import { useParticipantContext } from '../_context/ParticipantManagerContext';
+import StatusModal from './StatusModal';
 
 const TableSkeleton = () => (
     <div className="animate-pulse my-6">
@@ -59,11 +60,13 @@ export function ParticipantManagerUI({ eventConfig, allPlayers } : ParticipantMa
         isUpdating,
         isError,
         selectedIds,
+        isStatusModalOpen,
         handleSelectAll,
-        areAllSelected
+        areAllSelected,
+        updateStatusSelected
     } = useParticipantContext();
     
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     
     if (isLoading && participants.length === 0) return <TableSkeleton />;
     if (isError) return <div>Error fetching participants.</div>;
@@ -140,6 +143,10 @@ export function ParticipantManagerUI({ eventConfig, allPlayers } : ParticipantMa
                 onClose={() => setIsModalOpen(false)}
                 isDoubles={eventConfig.is_doubles}
                 allPlayers={allPlayers}
+            />
+
+            <StatusModal
+                isOpen={isStatusModalOpen}
             />
         </>
     );

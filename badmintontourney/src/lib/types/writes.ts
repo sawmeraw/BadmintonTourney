@@ -154,6 +154,7 @@ export const updateSeedSchema = z.object({
   seed: z.number().int().positive()
 })
 
+
 export type UpdateEventPayload = z.infer<typeof updateEventSchema>;
 export type CreateEventPayload = z.infer<typeof createEventSchema>;
 export type UpdateFinalizedEventPayload = z.infer<typeof updateFinalizedEventSchema>;

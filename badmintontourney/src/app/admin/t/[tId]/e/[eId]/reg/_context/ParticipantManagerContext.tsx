@@ -2,6 +2,7 @@
 
 import { useParticipants } from "@/hooks/useParticipants";
 import { useUpdateParticipants } from "@/hooks/useUpdateParticipants";
+import { ParticipantStatus } from "@/lib/services/ParticipantService";
 import { ParticipantApiResponse } from "@/lib/types/api";
 import { useSearchParams } from "next/navigation";
 import { createContext, ReactNode, useContext, useMemo, useState } from "react";
@@ -16,11 +17,14 @@ interface ParticipantContextType {
     isUpdating: boolean;
     isError: boolean;
     selectedIds: string[];
+    isStatusModalOpen: boolean;
     toggleRow: (id: string) => void;
+    toggleStatusModal: ()=>void;
     handleSelectAll: (e: React.ChangeEvent<HTMLInputElement>) => void;
     areAllSelected: boolean;
     disableBulkUnseed: boolean;
     deleteSelected: () => void;
+    updateStatusSelected: (status: ParticipantStatus) => void;
     deleteSingle: (id: string)=>void;
     removeSeedFromSelected: () => void;
     clearSelection: () => void;
@@ -34,6 +38,7 @@ export const ParticipantProvider = ({ eventId, children }: { eventId: string, ch
     const searchParams = useSearchParams();
     const page = Number(searchParams.get('page') ?? 1);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState<boolean>(false);
     
     const { data, isLoading, isError } = useParticipants(eventId, page, PAGE_SIZE);
     const { mutate: updateParticipant, isPending: isUpdating } = useUpdateParticipants();
@@ -50,6 +55,10 @@ export const ParticipantProvider = ({ eventId, children }: { eventId: string, ch
     const handleToggleRow = (id: string) => {
         setSelectedIds(prev => prev.includes(id) ? prev.filter(pId => pId !== id) : [...prev, id]);
     };
+
+    const handleToggleStatusModal = ()=>{
+        setIsStatusModalOpen((prev)=> !prev);
+    }
 
     const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSelectedIds(e.target.checked ? participants.map(p => p.id) : []);
@@ -78,6 +87,15 @@ export const ParticipantProvider = ({ eventId, children }: { eventId: string, ch
         setSelectedIds([]);
     };
 
+    const updateStatusSelected = (status: ParticipantStatus)=>{
+        updateParticipant({
+            event_id: eventId,
+            updates: selectedIds.map(id => ({id: id, status: status}))
+        })
+        setIsStatusModalOpen(false);
+        setSelectedIds([]);
+    }
+
     const value = {
         eventId,
         participants,
@@ -88,9 +106,12 @@ export const ParticipantProvider = ({ eventId, children }: { eventId: string, ch
         isUpdating,
         isError,
         selectedIds,
+        isStatusModalOpen,
         disableBulkUnseed,
         toggleRow: handleToggleRow,
+        toggleStatusModal: handleToggleStatusModal,
         deleteSingle: deleteSingleWithId,
+        updateStatusSelected: updateStatusSelected,
         handleSelectAll,
         areAllSelected,
         deleteSelected,

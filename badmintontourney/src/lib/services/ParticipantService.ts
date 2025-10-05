@@ -171,3 +171,7 @@ export async function createParticipant(eventId: string, payload: CreateParticip
 
     await increaseCurrentEntries(eventId);
 }
+
+export async function updateStatus(){
+    
+}

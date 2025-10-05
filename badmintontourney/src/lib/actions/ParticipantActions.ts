@@ -5,6 +5,7 @@ import { createParticipant, deleteParticipants, removeSeed, updateParticipantSee
 import { revalidatePath } from "next/cache";
 
 export async function updateParticipantHandler(payload: UpdateParticipantPayload){
+    console.log(payload);
     let toDeleteIds: string[] = [];
     let toRemoveSeedIds: string[] = [];
     let statusUpdates: Record<ParticipantStatus, string[]> = {
