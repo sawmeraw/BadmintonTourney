@@ -2,6 +2,7 @@
 import { Participant } from "@/supabase/queryTypes";
 import { createClient } from "@/supabase/server";
 import { CreateParticipantPayload, CreatePlayerPayload } from "../types/writes";
+import { increaseCurrentEntries } from "./EventService";
 
 export type ParticipantStatus = Participant["status"];
 
@@ -167,4 +168,6 @@ export async function createParticipant(eventId: string, payload: CreateParticip
         });
     
     if(error) throw error;
+
+    await increaseCurrentEntries(eventId);
 }

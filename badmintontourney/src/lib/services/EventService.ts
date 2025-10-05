@@ -123,3 +123,14 @@ export async function getParticipantManagerConfigForEventId(eventId: string){
     return data;
 }
 
+
+export async function increaseCurrentEntries(eventId: string){
+    const supabase = createClient();
+
+    const {error} = await (await supabase)
+        .rpc("increment_current_entries", {
+            event_id_input: eventId
+        });
+    
+    if(error) throw error;
+}
