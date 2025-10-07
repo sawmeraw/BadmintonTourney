@@ -1,8 +1,8 @@
-import { Button } from "@/components/utils/Button";
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { useParticipantContext } from "../_context/ParticipantManagerContext";
 import { ParticipantStatus } from "@/lib/services/ParticipantService";
+import Button from "@mui/material/Button";
 
 interface StatusModalProps{
     isOpen: boolean;
@@ -45,9 +45,9 @@ export default function StatusModal({isOpen}: StatusModalProps){
                                 <option value="disqualified">Disqualified</option>
                             </select>
                         </div>
-                        <div className="flex justify-end bg-gray-50 space-x-4 px-4 py-2">
-                            <Button variant="secondary" type="button" onClick={toggleStatusModal}>Cancel</Button>
-                            <Button onClick={()=>updateStatusSelected(statusValue)}>Confirm</Button>
+                        <div className="flex justify-end bg-gray-50 gap-2 px-4 py-2">
+                            <Button variant="contained" color="secondary" type="button" onClick={toggleStatusModal}>Cancel</Button>
+                            <Button variant="contained" color="primary" onClick={()=>updateStatusSelected(statusValue)}>Confirm</Button>
                         </div>
                     </DialogPanel>
                 </div>
