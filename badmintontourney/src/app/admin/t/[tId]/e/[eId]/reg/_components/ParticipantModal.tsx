@@ -1,38 +1,56 @@
-'use client';
+"use client";
 
-import { Fragment, useState } from 'react';
-import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
-import Button from '@mui/material/Button';
-import { PlayerBase } from '@/lib/types/api';
-import { PlayerInput } from './PlayerInput';
-import { CreateParticipantPayload } from '@/lib/types/writes';
-import { useCreateParticipant } from '@/hooks/useUpdateParticipants';
+import { Fragment, useState } from "react";
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  Transition,
+  TransitionChild,
+} from "@headlessui/react";
+import Button from "@mui/material/Button";
+import { PlayerBase } from "@/lib/types/api";
+import { PlayerInput } from "./PlayerInput";
+import { CreateParticipantPayload } from "@/lib/types/writes";
+import { useCreateParticipant } from "@/hooks/useUpdateParticipants";
+import { Checkbox, FormControlLabel } from "@mui/material";
 
-interface AddParticipantModalProps{
-    isOpen: boolean;
-    onClose: ()=>void;
-    isDoubles: boolean;
-    eventId: string;
-    allPlayers: PlayerBase[];
+interface AddParticipantModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  isDoubles: boolean;
+  eventId: string;
+  allPlayers: PlayerBase[];
 }
 
-export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPlayers } : AddParticipantModalProps) {
+export function AddParticipantModal({
+  isOpen,
+  onClose,
+  isDoubles,
+  eventId,
+  allPlayers,
+}: AddParticipantModalProps) {
   const [formState, setFormState] = useState<CreateParticipantPayload>({
-    player1: { mode: 'existing', player_id: '' },
-    player2: { mode: 'existing', player_id: '' },
+    player1: { mode: "existing", player_id: "" },
+    player2: { mode: "existing", player_id: "" },
     autoSeed: true,
     event_type: isDoubles ? "doubles" : "singles",
-    event_id: eventId
+    event_id: eventId,
   });
 
-  const {mutate: createParticipant, error, isPending, isSuccess} =  useCreateParticipant();
+  const {
+    mutate: createParticipant,
+    error,
+    isPending,
+    isSuccess,
+  } = useCreateParticipant();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const payload : CreateParticipantPayload = {
+
+    const payload: CreateParticipantPayload = {
       event_id: eventId,
-      event_type: isDoubles ? 'doubles' : 'singles',
+      event_type: isDoubles ? "doubles" : "singles",
       player1: formState.player1,
       player2: isDoubles ? formState.player2 : undefined,
       autoSeed: formState.autoSeed,
@@ -44,73 +62,107 @@ export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPl
 
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog as="div" onClose={onClose} className="relative top-1/2 left-1/2 z-50">
-        
-          <TransitionChild 
-            as={Fragment}
-            enter="ease-out duration-200"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-            >
-              <div className="fixed inset-0 bg-black/50 rounded-lg" aria-hidden="true" />
-            </TransitionChild>
-            <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-              <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <div className="bg-white pt-5">
-                  <DialogTitle className="text-xl font-semibold text-gray-900 px-4">
-                    Add {isDoubles ? 'Team' : 'Participant'}
-                  </DialogTitle>
+      <Dialog
+        as="div"
+        onClose={onClose}
+        className="relative top-1/2 left-1/2 z-50"
+      >
+        <TransitionChild
+          as={Fragment}
+          enter="ease-out duration-200"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div
+            className="fixed inset-0 bg-black/50 rounded-lg"
+            aria-hidden="true"
+          />
+        </TransitionChild>
+        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+          <DialogPanel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div className="bg-white pt-5">
+              <DialogTitle className="text-xl font-semibold text-gray-900 px-4">
+                Add {isDoubles ? "Team" : "Participant"}
+              </DialogTitle>
 
-                  <form onSubmit={handleSubmit} className="mt-2">
-                    <PlayerInput
-                      playerNumber={1}
-                      allPlayers={allPlayers}
-                      value={formState.player1}
-                      onChange={(val) => setFormState(prev => ({ ...prev, player1: val }))}
-                    />
+              <form onSubmit={handleSubmit} className="mt-2">
+                <PlayerInput
+                  playerNumber={1}
+                  allPlayers={allPlayers}
+                  value={formState.player1}
+                  onChange={(val) =>
+                    setFormState((prev) => ({ ...prev, player1: val }))
+                  }
+                />
 
-                    {isDoubles && (
-                      <PlayerInput
-                        playerNumber={2}
-                        allPlayers={allPlayers}
-                        value={formState.player2}
-                        onChange={(val) => setFormState(prev => ({ ...prev, player2: val }))}
+                {isDoubles && (
+                  <PlayerInput
+                    playerNumber={2}
+                    allPlayers={allPlayers}
+                    value={formState.player2}
+                    onChange={(val) =>
+                      setFormState((prev) => ({ ...prev, player2: val }))
+                    }
+                  />
+                )}
+
+                <div className="py-2">
+                  <div className="grid grid-cols-2 gap-4 items-end">
+                    <div className="relative flex items-center">
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            id="autoSeed"
+                            checked={formState.autoSeed}
+                            onChange={(e) =>
+                              setFormState((prev) => ({
+                                ...prev,
+                                autoSeed: e.target.checked,
+                                seed: "",
+                              }))
+                            }
+                            sx={{
+                              p: 0.5,
+                              "&.Mui-checked": {
+                                color: "#059669",
+                              },
+                            }}
+                          />
+                        }
+                        label={
+                          <span className="font-medium text-gray-900 text-sm whitespace-nowrap">
+                            Auto-seed{" "}
+                            <span className="text-xs font-normal">
+                              (Uncheck if manually seeding later)
+                            </span>
+                          </span>
+                        }
+                        sx={{ ml: 1.5 }}
                       />
-                    )}
-                    
-                    <div className="bg-gray-200 p-4 rounded-md">
-                      <div className="grid grid-cols-2 gap-4 items-end">
-                        
-                        <div className="relative flex items-center">
-                          <div className="flex h-6 items-center">
-                            <input
-                              id="autoSeed"
-                              type="checkbox"
-                              checked={formState.autoSeed}
-                              onChange={(e) => setFormState(prev => ({ ...prev, autoSeed: e.target.checked, seed: '' }))}
-                              className="h-4 w-4 rounded border-gray-300 text-emerald-600"
-                            />
-                          </div>
-                          <div className="ml-3 text-sm whitespace-nowrap">
-                            <label htmlFor="autoSeed" className="font-medium text-gray-900">Auto-seed <span className='text-xs font-normal'>{`(Uncheck if manually seeding later)`}</span></label>
-                          </div>
-                        </div>
-                      </div>
                     </div>
-
-                    <div className="flex justify-end bg-gray-50 space-x-4 px-4 py-2">
-                      <Button variant="contained" onClick={onClose}>Cancel</Button>
-                      <Button type="submit">Confirm</Button>
-                    </div>
-                  </form>
+                  </div>
                 </div>
-            </DialogPanel>
-          </div>
+
+                <div className="flex justify-end bg-gray-50 gap-2 px-4 py-2">
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={onClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="contained" color="primary" type="submit">
+                    Confirm
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </DialogPanel>
+        </div>
       </Dialog>
     </Transition>
-    
   );
 }

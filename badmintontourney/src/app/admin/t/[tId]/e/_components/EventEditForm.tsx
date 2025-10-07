@@ -15,10 +15,7 @@ import {
   updateEventAction,
 } from "@/lib/actions/EventActions";
 import EventConfirmationModal from "@/components/events/EventConfirmationModal";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import { TextField, Checkbox, FormControlLabel, MenuItem } from "@mui/material";
 
 type EventTypeFormOption = { id: string; name: string };
 type TemplateFormOption = { id: string; name: string };
