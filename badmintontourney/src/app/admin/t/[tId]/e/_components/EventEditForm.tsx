@@ -1,6 +1,7 @@
 'use client';
 
-import { Button } from "@/components/utils/Button";
+// import { Button } from "@/components/utils/Button";
+import Button from "@mui/material/Button";
 import { LinkButton } from "@/components/utils/LinkButton";
 import { Event } from "@/supabase/queryTypes";
 import { startTransition, useActionState, useRef, useState } from "react";
@@ -23,7 +24,7 @@ interface EventFormProps{
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} className="w-full">
+    <Button variant="contained" type="submit" color="primary" disabled={pending} className="w-full">
       {pending ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Event')}
     </Button>
   );

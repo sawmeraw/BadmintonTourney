@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from "@/components/utils/Button";
+import Button from "@mui/material/Button";
 import { EventsList, NoEvents } from "@/components/tournaments/AdminEventList";
 import { createTournamentAction, TournamentFormState, updateTournamentAction } from "@/lib/actions/TournamentActions";
 import { Tournament } from "@/supabase/queryTypes";
@@ -20,7 +20,7 @@ interface TournamentFormProps{
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} className="w-full">
+    <Button variant="contained" color="primary" type="submit" disabled={pending} className="w-full">
       {pending ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Tournament')}
     </Button>
   );

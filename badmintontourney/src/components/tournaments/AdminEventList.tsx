@@ -1,4 +1,4 @@
-import { LinkButton } from "../utils/LinkButton";
+import Button from "@mui/material/Button";
 
 interface EventListProps{
     tournamentId : string | undefined;
@@ -17,25 +17,25 @@ export const EventsList = ({tournamentId, events}: EventListProps ) => (
           className="flex items-center justify-between rounded-md bg-gray-50 p-3"
         >
           <p className="font-medium text-gray-800">{event.name}</p>
-          <LinkButton
+          <Button
             href={`/admin/t/${tournamentId}/e/${event.id}`}
-            variant="secondary"
-            size="sm"
+            variant="outlined"
+            color="primary"
           >
             Configure
-          </LinkButton>
+          </Button>
         </li>
       ))}
     </ul>
     <div className="pt-4 border-t border-gray-200">
-      <LinkButton
+      <Button
         href={`/admin/t/${tournamentId}/e/create`}
-        variant="ghost"
-        size="sm"
+        variant="contained"
+        color="primary"
         className="w-full"
       >
         + Add Another Event
-      </LinkButton>
+      </Button>
     </div>
   </div>
 );
@@ -43,8 +43,8 @@ export const EventsList = ({tournamentId, events}: EventListProps ) => (
 export const NoEvents = ({ tournamentId }: { tournamentId: string | undefined}) => (
   <div className="text-center py-4">
     <p className="text-sm text-gray-500 mb-4">This tournament has no events yet.</p>
-    <LinkButton href={`/admin/t/${tournamentId}/e/create`}>
+    <Button href={`/admin/t/${tournamentId}/e/create`}>
       Create Your First Event
-    </LinkButton>
+    </Button>
   </div>
 );
