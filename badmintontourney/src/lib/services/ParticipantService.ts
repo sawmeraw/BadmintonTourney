@@ -140,7 +140,7 @@ export async function createParticipant(
     payload: CreateParticipantPayload
 ) {
     try {
-        const [allowedInEvent, allowedInTournament] = await Promise.all([
+        const [allowedInEvent, isRegistrationClosed] = await Promise.all([
             canAddParticipantInEvent(eventId),
             isTournamentRegistrationClosed({ eventId: eventId }),
         ]);
@@ -150,7 +150,7 @@ export async function createParticipant(
             );
         }
 
-        if (!allowedInTournament) {
+        if (isRegistrationClosed) {
             throw new Error("Tournament has closed registration");
         }
     } catch (error) {
