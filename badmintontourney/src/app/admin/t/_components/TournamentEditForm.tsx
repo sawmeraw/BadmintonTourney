@@ -7,7 +7,10 @@ import { Tournament } from "@/supabase/queryTypes";
 import { CheckCircleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { FormLabel } from "@/components/utils/FormLabel";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 type LocationFormOption = { id: string, name: string };
 type EventListItem = { id: string; name: string | null; };
@@ -55,52 +58,98 @@ export default function TournamentEditForm({initialData, locations, events} : To
             </p>
 
             <div className="mt-6 space-y-6">
-              
               <div>
-                <FormLabel htmlFor="name">Tournament Name</FormLabel>
-                <input type="text" name="name" id="name" defaultValue={initialData?.name} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required />
+                <TextField type="text" name="name" id="name" label="Tournament Name" variant="outlined"  defaultValue={initialData?.name} fullWidth required />
                 {state.errors?.name && <p className="mt-1 text-sm text-red-600">{state.errors.name[0]}</p>}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <FormLabel htmlFor="start_date">Start Date</FormLabel>
-                  <input type="date" name="start_date" id="start_date" defaultValue={initialData?.start_date ? new Date(initialData.start_date).toISOString().split('T')[0] : ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
-                  {state.errors?.start_date && <p className="mt-1 text-sm text-red-600">{state.errors.start_date[0]}</p>}
-                </div>
-                <div>
-                  <FormLabel htmlFor="end_date">End Date</FormLabel>
-                  <input type="date" name="end_date" id="end_date" defaultValue={initialData?.end_date ? new Date(initialData.end_date).toISOString().split('T')[0] : ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
-                  {state.errors?.end_date && <p className="mt-1 text-sm text-red-600">{state.errors.end_date[0]}</p>}
-                </div>
+                <TextField
+                  label="Start Date"
+                  id="start_date"
+                  name="start_date"
+                  type="date"
+                  fullWidth
+                  defaultValue={
+                    initialData?.start_date
+                      ? new Date(initialData.start_date).toISOString().split('T')[0]
+                      : ''
+                  }
+                  error={!!state.errors?.start_date}
+                  helperText={state.errors?.start_date?.[0]}
+                  required
+                />
+
+                <TextField
+                  label="End Date"
+                  id="end_date"
+                  name="end_date"
+                  type="date"
+                  fullWidth
+                  defaultValue={
+                    initialData?.end_date
+                      ? new Date(initialData.end_date).toISOString().split('T')[0]
+                      : ''
+                  }
+                  error={!!state.errors?.end_date}
+                  helperText={state.errors?.end_date?.[0]}
+                  required
+                />
               </div>
 
               <div>
-                <FormLabel htmlFor="description">Description</FormLabel>
-                <textarea id="description" name="description" rows={5} defaultValue={initialData?.description || ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"></textarea>
+                <TextField label="Description" id="description" name="description" variant="outlined" defaultValue={initialData?.description || ''} fullWidth minRows={2} multiline maxRows={10} ></TextField>
               </div>
                <div>
-                <FormLabel htmlFor="banner_url">Banner Image URL</FormLabel>
-                <input type="url" name="banner_url" id="banner_url" defaultValue={initialData?.banner_url || ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="https://example.com/image.png" />
+                <TextField
+                  label="Banner Image URL"
+                  id="banner_url"
+                  name="banner_url"
+                  type="url"
+                  defaultValue={initialData?.banner_url || ''}
+                  fullWidth
+                  variant="outlined"
+                  placeholder="https://example.com/image.png"
+                />
               </div>
             </div>
           </div>
           
            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
             <h2 className="text-lg font-semibold leading-7 text-gray-900">Logistics & Information</h2>
-             <div className="mt-6 space-y-6">
-                <div>
-                    <FormLabel htmlFor="shuttle_info">Shuttlecock Info</FormLabel>
-                    <input type="text" name="shuttle_info" id="shuttle_info" defaultValue={initialData?.shuttle_info || ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="e.g., Yonex Aerosensa 30" />
-                </div>
-                <div>
-                    <FormLabel htmlFor="food_info">Food & Refreshments</FormLabel>
-                    <textarea id="food_info" name="food_info" rows={3} defaultValue={initialData?.food_info || ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"></textarea>
-                </div>
-                <div>
-                    <FormLabel htmlFor="parking_info">Parking Information</FormLabel>
-                    <textarea id="parking_info" name="parking_info" rows={3} defaultValue={initialData?.parking_info || ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"></textarea>
-                </div>
+             <div className="mt-6 flex flex-col gap-6">
+                <TextField
+                  label="Shuttlecock Info"
+                  id="shuttle_info"
+                  name="shuttle_info"
+                  type="text"
+                  defaultValue={initialData?.shuttle_info || ''}
+                  fullWidth
+                  variant="outlined"
+                  placeholder="e.g., Yonex Aerosensa 30"
+                />
+
+                <TextField
+                  label="Food & Refreshments"
+                  id="food_info"
+                  name="food_info"
+                  defaultValue={initialData?.food_info || ''}
+                  fullWidth
+                  variant="outlined"
+                  multiline
+                  minRows={3}
+                />
+
+                <TextField
+                  label="Parking Information"
+                  id="parking_info"
+                  name="parking_info"
+                  defaultValue={initialData?.parking_info || ''}
+                  fullWidth
+                  variant="outlined"
+                  multiline
+                  minRows={3}
+                />
              </div>
            </div>
         </div>
@@ -109,29 +158,62 @@ export default function TournamentEditForm({initialData, locations, events} : To
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-6">
                 <h2 className="text-lg font-semibold leading-7 text-gray-900">Settings</h2>
                 <div>
-                    <FormLabel htmlFor="location_id">Location</FormLabel>
-                    <select id="location_id" name="location_id" defaultValue={initialData?.location_id || ''} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                        <option value="">Select a location</option>
-                        {locations.map(loc => <option key={loc.id} value={loc.id}>{loc.name}</option>)}
-                    </select>
-                    {state.errors?.location_id && <p className="mt-1 text-sm text-red-600">{state.errors.location_id}</p>}
+                    <TextField
+                      select
+                      label="Location"
+                      id="location_id"
+                      name="location_id"
+                      defaultValue={initialData?.location_id || ''}
+                      fullWidth
+                      variant="outlined"
+                      error={!!state.errors?.location_id}
+                    >
+                      <MenuItem value="">Select a location</MenuItem>
+                      {locations.map((loc) => (
+                        <MenuItem key={loc.id} value={loc.id}>
+                          {loc.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    {state.errors?.location_id && (
+                      <p className="mt-1 text-sm text-red-600">{state.errors.location_id}</p>
+                    )}
                 </div>
                  <div>
-                    <FormLabel htmlFor="status">Status</FormLabel>
-                    <select id="status" name="status" defaultValue={initialData?.status || 'upcoming'} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                        <option value="upcoming">Upcoming</option>
-                        <option value="ongoing">Ongoing</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                    </select>
+                    <TextField
+                      select
+                      label="Status"
+                      id="status"
+                      name="status"
+                      defaultValue={initialData?.status || 'upcoming'}
+                      fullWidth
+                      variant="outlined"
+                      error={!!state.errors?.status}
+                    >
+                      <MenuItem value="upcoming">Upcoming</MenuItem>
+                      <MenuItem value="ongoing">Ongoing</MenuItem>
+                      <MenuItem value="completed">Completed</MenuItem>
+                      <MenuItem value="cancelled">Cancelled</MenuItem>
+                    </TextField>
                 </div>
                  <div className="relative flex items-start">
-                    <div className="flex h-6 items-center">
-                        <input id="is_registration_closed" name="is_registration_closed" type="checkbox" defaultChecked={initialData?.is_registration_closed || false} className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-600" />
-                    </div>
-                    <div className="ml-3 text-sm leading-6">
-                        <label htmlFor="is_registration_closed" className="font-medium text-gray-900">Close Registration</label>
-                    </div>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          id="is_registration_closed"
+                          name="is_registration_closed"
+                          defaultChecked={initialData?.is_registration_closed || false}
+                          sx={{
+                            color: 'emerald.main',
+                            '&.Mui-checked': {
+                              color: 'emerald.main',
+                            },
+                          }}
+                        />
+                      }
+                      label="Close Registration"
+                    />
                 </div>
                 <div className="border-t border-gray-200 pt-6">
                     <SubmitButton isEditing={isEditing} />
