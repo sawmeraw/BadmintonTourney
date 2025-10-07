@@ -3,7 +3,7 @@
 import { ThemeProvider } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { ReactNode, useState } from "react";
-import { theme } from "./theme";
+import { muiTheme } from "./theme";
 
 export function ReactQueryProvider({children}: {children : ReactNode}){
     const [queryClient] = useState(()=> new QueryClient());
@@ -18,7 +18,7 @@ export function ReactQueryProvider({children}: {children : ReactNode}){
 
 export function ThemeRegistry({children}:{children: React.ReactNode}){
     return (
-        <ThemeProvider theme={theme}>
+        <ThemeProvider theme={muiTheme}>
             {children}
         </ThemeProvider>
     )

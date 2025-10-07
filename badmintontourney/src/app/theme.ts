@@ -1,9 +1,8 @@
 'use client';
 
-import { createTheme } from '@mui/material/styles';
+import { createTheme, ThemeOptions } from '@mui/material/styles';
 
-export const theme = createTheme({
-  
+const themeOptions: ThemeOptions = {
   palette: {
     primary: {
       main: '#059669', 
@@ -12,22 +11,22 @@ export const theme = createTheme({
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#64748b', // Slate 500
+      main: '#64748b',
     },
     background: {
-      default: '#f8fafc', // Slate 50
+      default: '#ffffff',
       paper: '#ffffff',
     },
     text: {
-      primary: '#1e293b', // Slate 800
-      secondary: '#64748b', // Slate 500
+      primary: '#1e293b',
+      secondary: '#64748b',
     },
     error: {
-      main: '#dc2626', // Red 600
+      main: '#dc2626',
     },
     grey: {
-      200: '#e2e8f0', // Slate 200
-      300: '#cbd5e1', // Slate 300
+      200: '#e2e8f0',
+      300: '#cbd5e1',
     },
   },
 
@@ -36,14 +35,13 @@ export const theme = createTheme({
     fontWeightRegular: 400,
     fontWeightMedium: 500,
     fontWeightBold: 700,
-    h1: { fontWeight: 700, fontSize: '2.5rem' },
-    h2: { fontWeight: 700, fontSize: '2rem' },
-    // ... todo
+    fontSize: 14,
+    h1: { fontWeight: 700, fontSize: '2rem' },
+    h2: { fontWeight: 700, fontSize: '1.5rem' },
   },
- 
-  
+
   shape: {
-    borderRadius: 6,
+    borderRadius: 4,
   },
 
   components: {
@@ -55,37 +53,34 @@ export const theme = createTheme({
       },
       styleOverrides: {
         root: {
-          textTransform: 'none', // No more ALL CAPS buttons
-          fontWeight: 600,       // ✅ Set font weight to semibold
+          textTransform: 'none',
+          fontWeight: 500,      
           padding: '8px 12px',
         },
       },
     },
 
-    // TextField and Input Overrides
+    
     MuiTextField: {
       defaultProps: {
         variant: 'outlined',
         fullWidth: true,
+        size: "small"
       },
+      
     },
+    
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
           // Style the border color on focus
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: '#059669', 
+            borderColor: '#06c689', 
           },
         },
         notchedOutline: {
           borderColor: '#cbd5e1', 
         },
-
-        sizeSmall: {
-          padding: '4px 10px',
-          fontSize: '0.75rem',
-        },
-        
       },
     },
     MuiInputLabel: {
@@ -124,5 +119,7 @@ export const theme = createTheme({
         }
     },
   },
-});
+};
+
+export const muiTheme = createTheme(themeOptions);
 

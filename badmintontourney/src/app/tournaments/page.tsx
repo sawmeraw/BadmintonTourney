@@ -1,7 +1,7 @@
 import { createClient } from '@/supabase/server';
 import { TournamentList } from '@/components/tournaments/TournamentList';
 import { PaginationControls } from '@/components/utils/PaginationControls';
-import { LinkButton } from '@/components/utils/LinkButton';
+import Button from '@mui/material/Button';
 import { PageWrapper } from '@/components/layout/PageWrapper';
 
 const PAGE_SIZE = 10;
@@ -47,9 +47,9 @@ export default async function TournamentsPage({
                     <p className="mt-1 text-lg text-gray-600">Browse all upcoming and past events.</p>
                 </div>
                 <div>
-                    <LinkButton href="/tournaments/create">
+                    <Button href="/tournaments/create" variant='contained'>
                         Create Tournament
-                    </LinkButton>
+                    </Button>
                 </div>
             </div>
 

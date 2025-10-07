@@ -1,5 +1,7 @@
-import Button from "@mui/material/Button";
+"use client";
 
+import { useTheme } from "@emotion/react";
+import Button from "@mui/material/Button";
 interface EventListProps{
     tournamentId : string | undefined;
     events: {
@@ -8,7 +10,9 @@ interface EventListProps{
     }[];
 }
 
-export const EventsList = ({tournamentId, events}: EventListProps ) => (
+export const EventsList = ({tournamentId, events}: EventListProps ) => {
+  const theme = useTheme();
+  return (
   <div className="space-y-4">
     <ul className="space-y-3">
       {events.map((event) => (
@@ -32,13 +36,14 @@ export const EventsList = ({tournamentId, events}: EventListProps ) => (
         href={`/admin/t/${tournamentId}/e/create`}
         variant="contained"
         color="primary"
-        className="w-full"
+        fullWidth
       >
         + Add Another Event
       </Button>
     </div>
   </div>
-);
+)
+};
 
 export const NoEvents = ({ tournamentId }: { tournamentId: string | undefined}) => (
   <div className="text-center py-4">

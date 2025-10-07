@@ -98,7 +98,7 @@ export default function TournamentEditForm({initialData, locations, events} : To
               </div>
 
               <div>
-                <TextField label="Description" id="description" name="description" variant="outlined" defaultValue={initialData?.description || ''} fullWidth minRows={2} multiline maxRows={10} ></TextField>
+                <TextField label="Description" id="description" name="description" variant="outlined" defaultValue={initialData?.description || ''} fullWidth minRows={3} multiline maxRows={10} ></TextField>
               </div>
                <div>
                 <TextField
@@ -137,7 +137,7 @@ export default function TournamentEditForm({initialData, locations, events} : To
                   fullWidth
                   variant="outlined"
                   multiline
-                  minRows={3}
+                  minRows={2}
                 />
 
                 <TextField
@@ -148,7 +148,7 @@ export default function TournamentEditForm({initialData, locations, events} : To
                   fullWidth
                   variant="outlined"
                   multiline
-                  minRows={3}
+                  minRows={2}
                 />
              </div>
            </div>

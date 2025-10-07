@@ -3,7 +3,7 @@
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
-import { Button } from "./Button";
+import Button from "@mui/material/Button";
 
 interface ConfirmationModalProps{
     isOpen: boolean;
@@ -68,7 +68,8 @@ export const ConfirmationModal = ({
                             </div>
                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                 <Button
-                                    variant="primary" 
+                                    variant="contained" 
+                                    color="primary"
                                     onClick={onConfirm}
                                     disabled={isLoading}
                                     className="w-full sm:ml-3 sm:w-auto"
@@ -76,7 +77,8 @@ export const ConfirmationModal = ({
                                     {isLoading ? 'Processing...' : confirmText}
                                 </Button>
                                 <Button
-                                    variant="secondary"
+                                    variant="outlined"
+                                    color="secondary"
                                     onClick={onClose}
                                     className="mt-3 w-full sm:mt-0 sm:w-auto"
                                 >

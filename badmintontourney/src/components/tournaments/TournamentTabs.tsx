@@ -5,7 +5,7 @@ import {
   CalendarDaysIcon, MapPinIcon, UsersIcon, TrophyIcon,
   InformationCircleIcon, SparklesIcon, BeakerIcon, PhoneIcon
 } from '@heroicons/react/24/outline';
-import { LinkButton } from '../utils/LinkButton';
+import Button from '@mui/material/Button';
 import { StatusBadge } from '../utils/StatusBadge';
 import { PageWrapper } from '../layout/PageWrapper';
 import {  TournamentSummary } from '@/supabase/queryTypes';
@@ -51,9 +51,9 @@ export function TournamentTabs({ tournament }: { tournament: TournamentSummary }
             </div>
             <div className="mt-4 md:mt-2 md:ml-6 flex-shrink-0">
               {!tournament.is_registration_closed && (
-                <LinkButton href={`/tournaments/${tournament.id}/register`} size="lg">
+                <Button href={`/tournaments/${tournament.id}/register`} variant='outlined' color='primary'>
                   Register Now
-                </LinkButton>
+                </Button>
               )}
             </div>
           </div>
@@ -134,13 +134,13 @@ export function TournamentTabs({ tournament }: { tournament: TournamentSummary }
                         </div>
                         
                         <div className="mt-4 sm:mt-0">
-                            <LinkButton 
+                            <Button 
                             href={`/tournaments/${tournament.id}/events/${event.id}`}
-                            variant="secondary"
-                            size="sm"
+                            variant="outlined"
+                            color='primary'
                             >
                                 Open
-                            </LinkButton>
+                            </Button>
                         </div>
                         </div>
                     ))}
@@ -171,8 +171,8 @@ export function TournamentTabs({ tournament }: { tournament: TournamentSummary }
             <div className="mt-8">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
                 <div className="flex flex-col space-y-3">
-                    <LinkButton href="#" variant="secondary">View Participants</LinkButton>
-                    <LinkButton href="#" variant="ghost">Event Rules & Regulations</LinkButton>
+                    <Button href="#" variant="outlined" color='primary'>View Participants</Button>
+                    <Button href="#" variant="text" color="secondary">Event Rules & Regulations</Button>
                 </div>
             </div>
           </div>

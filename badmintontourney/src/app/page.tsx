@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { PageWrapper } from '@/components/layout/PageWrapper';
-import { LinkButton } from '@/components/utils/LinkButton';
+import Button from '@mui/material/Button';
 
 export default function HomePage() {
   return (
@@ -17,17 +17,17 @@ export default function HomePage() {
           </p>
         </div>
         <div className="mt-10 flex items-center justify-center gap-x-6">
-          <LinkButton href="/tournaments">
+          <Button href="/tournaments" variant='contained'>
             Explore Tournaments
-          </LinkButton>
+          </Button>
           
-          <LinkButton href="/players" variant="secondary" size="lg">
+          <Button href="/players" variant="outlined" color='primary'>
             View Players
-          </LinkButton>
+          </Button>
 
-          <LinkButton href="/about" variant="ghost" size="sm">
+          <Button href="/about" variant="text" size="small">
             Learn More <ArrowRightIcon className="ml-2 h-4 w-4" />
-          </LinkButton>
+          </Button>
         </div>
       </section>
 

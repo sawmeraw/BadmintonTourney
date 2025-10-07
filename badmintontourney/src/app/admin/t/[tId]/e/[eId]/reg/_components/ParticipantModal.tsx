@@ -1,8 +1,8 @@
 'use client';
 
-import { Fragment, useState, useSyncExternalStore } from 'react';
+import { Fragment, useState } from 'react';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
-import { Button } from '@/components/utils/Button';
+import Button from '@mui/material/Button';
 import { PlayerBase } from '@/lib/types/api';
 import { PlayerInput } from './PlayerInput';
 import { CreateParticipantPayload } from '@/lib/types/writes';
@@ -102,7 +102,7 @@ export function AddParticipantModal({ isOpen, onClose, isDoubles, eventId, allPl
                     </div>
 
                     <div className="flex justify-end bg-gray-50 space-x-4 px-4 py-2">
-                      <Button variant="secondary" type="button" onClick={onClose}>Cancel</Button>
+                      <Button variant="contained" onClick={onClose}>Cancel</Button>
                       <Button type="submit">Confirm</Button>
                     </div>
                   </form>
