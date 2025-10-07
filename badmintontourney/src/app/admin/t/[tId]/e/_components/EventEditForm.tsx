@@ -449,7 +449,6 @@ export default function EventEditForm({
                     }
                     label="Include 3rd Place Match"
                     sx={{
-                      ml: 1.5,
                       "& .MuiFormControlLabel-label": {
                         fontWeight: 500,
                         color: initialData?.finalised_for_matches
@@ -476,7 +475,6 @@ export default function EventEditForm({
                     }
                     label="Show as Featured"
                     sx={{
-                      ml: 1.5,
                       "& .MuiFormControlLabel-label": {
                         fontWeight: 500,
                         fontSize: "0.875rem",
@@ -505,7 +503,6 @@ export default function EventEditForm({
                     }
                     label="Finalize & Create Matches"
                     sx={{
-                      ml: 1.5,
                       "& .MuiFormControlLabel-label": {
                         fontWeight: 500,
                         fontSize: "0.875rem", // text-sm
