@@ -1,12 +1,6 @@
 import { Participant } from "@/supabase/queryTypes";
 import { createClient } from "@/supabase/server";
 import { CreateParticipantPayload, CreatePlayerPayload } from "../types/writes";
-import {
-    canAddParticipantInEvent,
-    increaseCurrentEntries,
-} from "./EventService";
-import { isTournamentRegistrationClosed } from "./TournamentService";
-import { getPlayerById } from "./PlayerService";
 
 export type ParticipantStatus = Participant["status"];
 
@@ -61,17 +55,42 @@ export async function updateParticipantStatus(
 
 async function getNewSeedForEventId(eventId: string) {
     const supabase = createClient();
-    const { data, error } = await (await supabase)
+
+    //get the max participants set in events table
+
+    const { data: eventData, error: eventError } = await (await supabase)
+        .from("events")
+        .select("max_participants")
+        .eq("id", eventId)
+        .single();
+
+    if (eventError || !eventData)
+        throw new Error("Failed to fetch event details");
+
+    const maxParticipants = eventData.max_participants;
+    if (typeof maxParticipants !== "number")
+        throw new Error("Invalid max participants value");
+
+    //get all seeds
+    const { data: seedData, error: seedError } = await (await supabase)
         .from("event_participants")
         .select("seed")
         .eq("event_id", eventId);
 
-    if (error || !data) throw new Error("Failed to fetch seeds");
-    const seeds = data
+    if (seedError || !seedData) throw new Error("Failed to fetch seeds");
+
+    const usedSeeds = seedData
         .map((row) => row.seed)
         .filter((s) => typeof s === "number");
-    const newSeed = seeds.length > 0 ? Math.max(...seeds) + 1 : 1;
-    return newSeed;
+
+    //find the first unused seed
+    for (let i = 1; i <= maxParticipants; i++) {
+        if (!usedSeeds.includes(i)) {
+            return i;
+        }
+    }
+
+    throw new Error("No available seed found");
 }
 
 export async function createPlayer(player: CreatePlayerPayload) {
@@ -154,6 +173,19 @@ export async function createParticipant(
     if (error) {
         console.log(error.message);
         throw new Error(error.message);
+    }
+
+    if (payload.autoSeed) {
+        const newParticipant = data as Participant;
+        try {
+            const newSeed = await getNewSeedForEventId(eventId);
+            await (await supabase)
+                .from("event_participants")
+                .update({ seed: newSeed })
+                .eq("id", newParticipant.id);
+        } catch (error) {
+            throw new Error("Participant created but couldn't autoseed");
+        }
     }
 }
 
