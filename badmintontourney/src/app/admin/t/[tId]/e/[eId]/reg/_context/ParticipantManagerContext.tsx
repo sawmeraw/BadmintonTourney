@@ -1,7 +1,10 @@
 "use client";
 
 import { useParticipants } from "@/hooks/useParticipants";
-import { useSwapSeed, useUpdateParticipants } from "@/hooks/useUpdateParticipants";
+import {
+    useSwapSeed,
+    useUpdateParticipants,
+} from "@/hooks/useUpdateParticipants";
 import { ParticipantStatus } from "@/lib/services/ParticipantService";
 import { ParticipantApiResponse } from "@/lib/types/api";
 import { useSearchParams } from "next/navigation";
@@ -15,7 +18,7 @@ interface ParticipantContextType {
     pageSize: number;
     isLoading: boolean;
     isUpdating: boolean;
-    isSwapping:boolean;
+    isSwapping: boolean;
     isError: boolean;
     selectedIds: string[];
     isStatusModalOpen: boolean;
@@ -28,7 +31,7 @@ interface ParticipantContextType {
     updateStatusSelected: (status: ParticipantStatus) => void;
     deleteSingle: (id: string) => void;
     removeSeedFromSelected: () => void;
-    swapSeedsSelected: ()=>void;
+    swapSeedsSelected: () => void;
     clearSelection: () => void;
 }
 
@@ -55,10 +58,10 @@ export const ParticipantProvider = ({
         page,
         PAGE_SIZE
     );
-    const { mutate: updateParticipant, isPending: isUpdating } =
+    const { mutateAsync: updateParticipant, isPending: isUpdating } =
         useUpdateParticipants();
-    
-    const {mutate: swapSeed, isPending: isSwapping} = useSwapSeed();
+
+    const { mutateAsync: swapSeed, isPending: isSwapping } = useSwapSeed();
 
     const participants = data?.participants || [];
     const totalCount = data?.totalCount || 0;
@@ -128,14 +131,14 @@ export const ParticipantProvider = ({
         setSelectedIds([]);
     };
 
-    const swapSeedsFromSelected = ()=>{
+    const swapSeedsFromSelected = () => {
         swapSeed({
             event_id: eventId,
             swapSeed: true,
-            updates: selectedIds.map((id)=> ({id:id}))
-        })
+            updates: selectedIds.map((id) => ({ id: id })),
+        });
         setSelectedIds([]);
-    }
+    };
 
     const value = {
         eventId,

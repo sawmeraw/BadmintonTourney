@@ -12,6 +12,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useParticipantContext } from "../_context/ParticipantManagerContext";
 import TableSkeleton from "@/components/utils/TableSkeleton";
 import StatusModal from "./StatusModal";
+import { useCreateParticipant } from "@/hooks/useUpdateParticipants";
 
 export interface ParticipantManagerUIProps {
     eventConfig: {
@@ -48,15 +49,15 @@ export function ParticipantManagerUI({
         isStatusModalOpen,
         handleSelectAll,
         areAllSelected,
-        clearSelection
+        clearSelection,
     } = useParticipantContext();
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-    const handleOpenModal = ()=>{
+    const handleToggleParticipantModal = () => {
         clearSelection();
-        setIsModalOpen((prev)=> !prev);
-    }
+        setIsModalOpen((prev) => !prev);
+    };
 
     if (isLoading && participants.length === 0)
         return <TableSkeleton numRows={5} numCols={4} />;
@@ -65,7 +66,7 @@ export function ParticipantManagerUI({
     return (
         <>
             {(isUpdating || isSwapping) && (
-                <div className="absolute inset-0 bg-opacity-60 flex items-center justify-center z-10">
+                <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
                     <div className="animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
                 </div>
             )}
@@ -96,7 +97,7 @@ export function ParticipantManagerUI({
                         </Button>
                     </div>
                 ) : (
-                    <Button onClick={handleOpenModal}>
+                    <Button onClick={handleToggleParticipantModal}>
                         + Add Participant
                     </Button>
                 )}
@@ -170,7 +171,7 @@ export function ParticipantManagerUI({
             <AddParticipantModal
                 eventId={eventId}
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={handleToggleParticipantModal}
                 isDoubles={eventConfig.is_doubles}
                 allPlayers={allPlayers}
             />
