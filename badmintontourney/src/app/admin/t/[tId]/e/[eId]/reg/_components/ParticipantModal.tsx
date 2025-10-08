@@ -40,9 +40,6 @@ export function AddParticipantModal({
 
   const {
     mutate: createParticipant,
-    error,
-    isPending,
-    isSuccess,
   } = useCreateParticipant();
 
   const handleSubmit = (e: React.FormEvent) => {

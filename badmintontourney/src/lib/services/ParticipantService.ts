@@ -207,4 +207,58 @@ export async function createParticipant(
     await increaseCurrentEntries(eventId);
 }
 
-export async function updateStatus() {}
+async function getCurrentSeed(participant_id: string){
+    const supabase = createClient();
+
+    const {data, error} = await (await supabase)
+        .from('event_participants')
+        .select('seed')
+        .eq('id', participant_id)
+        .single();
+    
+    if(error){
+        throw error;
+    }
+
+    if(!data.seed){
+        throw new Error("Seed is not set")
+    }
+
+    return data.seed;
+}
+
+export async function swapSeed(eventId: string, participant1_id : string, participant2_id: string){
+
+    let participant1Seed: number;
+    let participant2Seed: number;
+
+    try{
+        [participant1Seed, participant2Seed] = await Promise.all([getCurrentSeed(participant1_id), getCurrentSeed(participant2_id)]);
+
+        if(!participant1Seed || !participant2Seed){
+            throw new Error("Cannot swap seeds that are not set");
+        }
+    } catch(error){
+        throw new Error("Error occured fetching seeds for the participants");
+    }
+
+    try{
+        const [res1, res2] = await Promise.all([updateParticipantSeed(eventId, participant1_id, null), updateParticipantSeed(eventId, participant2_id, null)])
+        if (!res1 || !res2){
+            throw new Error("Failed to reset seed");
+        }
+
+    } catch(error){
+        throw new Error("Error resetting seeds");
+    }
+
+    try{
+        const [res1, res2] = await Promise.all([updateParticipantSeed(eventId, participant1_id, participant2Seed), updateParticipantSeed(eventId, participant2_id, participant1Seed)])
+        if(!res1 || !res2){
+            throw new Error("Error swapping seeds");
+        }
+    } catch(error){
+        console.log(error);
+        throw new Error("Error swapping seeds. Seed removed.")
+    }
+}

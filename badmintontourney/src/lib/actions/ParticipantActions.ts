@@ -1,11 +1,11 @@
 "use server";
 
-import { CreateParticipantPayload, createParticipantSchema, UpdateParticipantPayload, UpdateSeedPayload, updateSeedSchema } from "../types/writes";
-import { createParticipant, deleteParticipants, removeSeed, updateParticipantSeed, updateParticipantStatus, type ParticipantStatus } from "../services/ParticipantService";
+import { CreateParticipantPayload, createParticipantSchema, UpdateParticipantPayload, updateParticipantsSchema, UpdateSeedPayload, updateSeedSchema } from "../types/writes";
+import { createParticipant, deleteParticipants, removeSeed, swapSeed, updateParticipantSeed, updateParticipantStatus, type ParticipantStatus } from "../services/ParticipantService";
 import { revalidatePath } from "next/cache";
 
 export async function updateParticipantHandler(payload: UpdateParticipantPayload){
-    console.log(payload);
+    // console.log(payload);
     let toDeleteIds: string[] = [];
     let toRemoveSeedIds: string[] = [];
     let statusUpdates: Record<ParticipantStatus, string[]> = {
@@ -81,5 +81,36 @@ export async function createParticipantHandler(payload: CreateParticipantPayload
         throw error;
     }
 
-    revalidatePath(`/admin/t`)
+}
+
+export async function swapSeedHandler(payload: UpdateParticipantPayload){
+    const validatedFields = updateParticipantsSchema.safeParse(payload);
+    if(!validatedFields.success){
+        throw new Error("Validation failed");
+    }
+
+    const data = validatedFields.data;
+    if(!data.swapSeed){
+        throw new Error("Swap not allowed")
+    }
+    
+    if(data.updates.length !==2){
+        throw new Error("Seed can only be swapped between 2 participants")
+    }
+
+    try{
+        const eventId = data.event_id;
+        const participant1Id = data.updates[0].id;
+        const participant2Id = data.updates[1].id;
+        
+        if (! participant1Id || !participant2Id){
+            throw new Error("participant not selected");
+        }
+
+        await swapSeed(eventId, participant1Id, participant2Id);
+
+    } catch(error){
+        throw error;
+    }
+
 }

@@ -138,12 +138,13 @@ export const createPlayerSchema = z.object({
 
 export const updateParticipantsSchema = z.object({
   event_id: z.uuid(),
+  swapSeed: z.boolean().optional(),
   updates: z.array(
     z.object({
       id: z.string(),
       status: z.enum(['active', 'withdrawn', 'disqualified']).optional(),
       removeSeed: z.boolean().optional(),
-      isDeleted: z.boolean().optional(),
+      isDeleted: z.boolean().optional(),    
     })
   ),
 });

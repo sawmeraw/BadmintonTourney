@@ -42,15 +42,21 @@ export function ParticipantManagerUI({
         pageSize,
         isLoading,
         isUpdating,
+        isSwapping,
         isError,
         selectedIds,
         isStatusModalOpen,
         handleSelectAll,
         areAllSelected,
-        updateStatusSelected,
+        clearSelection
     } = useParticipantContext();
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+    const handleOpenModal = ()=>{
+        clearSelection();
+        setIsModalOpen((prev)=> !prev);
+    }
 
     if (isLoading && participants.length === 0)
         return <TableSkeleton numRows={5} numCols={4} />;
@@ -58,8 +64,8 @@ export function ParticipantManagerUI({
 
     return (
         <>
-            {isUpdating && (
-                <div className="absolute inset-0 bg-white bg-opacity-60 flex items-center justify-center z-10">
+            {(isUpdating || isSwapping) && (
+                <div className="absolute inset-0 bg-opacity-60 flex items-center justify-center z-10">
                     <div className="animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
                 </div>
             )}
@@ -90,7 +96,7 @@ export function ParticipantManagerUI({
                         </Button>
                     </div>
                 ) : (
-                    <Button onClick={() => setIsModalOpen(true)}>
+                    <Button onClick={handleOpenModal}>
                         + Add Participant
                     </Button>
                 )}

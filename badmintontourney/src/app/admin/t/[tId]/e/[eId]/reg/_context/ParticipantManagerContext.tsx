@@ -1,7 +1,7 @@
 "use client";
 
 import { useParticipants } from "@/hooks/useParticipants";
-import { useUpdateParticipants } from "@/hooks/useUpdateParticipants";
+import { useSwapSeed, useUpdateParticipants } from "@/hooks/useUpdateParticipants";
 import { ParticipantStatus } from "@/lib/services/ParticipantService";
 import { ParticipantApiResponse } from "@/lib/types/api";
 import { useSearchParams } from "next/navigation";
@@ -15,6 +15,7 @@ interface ParticipantContextType {
     pageSize: number;
     isLoading: boolean;
     isUpdating: boolean;
+    isSwapping:boolean;
     isError: boolean;
     selectedIds: string[];
     isStatusModalOpen: boolean;
@@ -27,6 +28,7 @@ interface ParticipantContextType {
     updateStatusSelected: (status: ParticipantStatus) => void;
     deleteSingle: (id: string) => void;
     removeSeedFromSelected: () => void;
+    swapSeedsSelected: ()=>void;
     clearSelection: () => void;
 }
 
@@ -55,6 +57,8 @@ export const ParticipantProvider = ({
     );
     const { mutate: updateParticipant, isPending: isUpdating } =
         useUpdateParticipants();
+    
+    const {mutate: swapSeed, isPending: isSwapping} = useSwapSeed();
 
     const participants = data?.participants || [];
     const totalCount = data?.totalCount || 0;
@@ -124,6 +128,15 @@ export const ParticipantProvider = ({
         setSelectedIds([]);
     };
 
+    const swapSeedsFromSelected = ()=>{
+        swapSeed({
+            event_id: eventId,
+            swapSeed: true,
+            updates: selectedIds.map((id)=> ({id:id}))
+        })
+        setSelectedIds([]);
+    }
+
     const value = {
         eventId,
         participants,
@@ -132,6 +145,7 @@ export const ParticipantProvider = ({
         pageSize: PAGE_SIZE,
         isLoading,
         isUpdating,
+        isSwapping,
         isError,
         selectedIds,
         isStatusModalOpen,
@@ -144,6 +158,7 @@ export const ParticipantProvider = ({
         areAllSelected,
         deleteSelected,
         removeSeedFromSelected,
+        swapSeedsSelected: swapSeedsFromSelected,
         clearSelection: () => setSelectedIds([]),
     };
 

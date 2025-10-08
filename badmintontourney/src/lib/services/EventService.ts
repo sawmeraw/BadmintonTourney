@@ -164,7 +164,7 @@ export async function canAddParticipantInEvent(eventId: string) {
 
   if (data.finalised_for_matches || data.is_complete) {
     return false;
-  }
+  }  
 
   return true;
 }
