@@ -6,6 +6,7 @@ import {
     increaseCurrentEntries,
 } from "./EventService";
 import { isTournamentRegistrationClosed } from "./TournamentService";
+import { getPlayerById } from "./PlayerService";
 
 export type ParticipantStatus = Participant["status"];
 
@@ -139,126 +140,86 @@ export async function createParticipant(
     eventId: string,
     payload: CreateParticipantPayload
 ) {
-    try {
-        const [allowedInEvent, isRegistrationClosed] = await Promise.all([
-            canAddParticipantInEvent(eventId),
-            isTournamentRegistrationClosed({ eventId: eventId }),
-        ]);
-        if (!allowedInEvent) {
-            throw new Error(
-                "Event has either been finalised or is already complete"
-            );
-        }
-
-        if (isRegistrationClosed) {
-            throw new Error("Tournament has closed registration");
-        }
-    } catch (error) {
-        throw error;
-    }
-
     const supabase = createClient();
-    const { player1, player2, event_type, autoSeed } = payload;
-    let newSeed: number | null = null;
 
-    if (event_type === "doubles" && !player2) {
-        throw new Error("Player 2 is needed for doubles");
-    }
-
-    let player1Id: string;
-    let player2Id: string | null = null;
-
-    if (player1.mode === "existing") {
-        player1Id = player1.player_id;
-    } else {
-        player1Id = await createPlayer({
-            first_name: player1.first_name,
-            last_name: player1.last_name,
-            middle_name: player1.middle_name ?? null,
-        });
-    }
-
-    if (player2) {
-        if (player2.mode === "existing") {
-            player2Id = player2.player_id;
-        } else {
-            player2Id = await createPlayer({
-                first_name: player2.first_name,
-                last_name: player2.last_name,
-                middle_name: player2.middle_name ?? null,
-            });
-        }
-    }
-
-    if (autoSeed) {
-        newSeed = await getNewSeedForEventId(eventId);
-    }
-
-    const { error } = await (await supabase).from("event_participants").insert({
-        event_id: eventId,
-        player1_id: player1Id,
-        player2_id: player2Id,
-        status: "active",
-        seed: newSeed,
+    const { data, error } = await (
+        await supabase
+    ).rpc("register_participant", {
+        p_event_id: eventId,
+        p_is_doubles: payload.event_type === "doubles" ? true : false,
+        p_player1: payload.player1,
+        p_player2: payload.player2 || null,
     });
 
-    if (error) throw error;
-
-    await increaseCurrentEntries(eventId);
+    if (error) {
+        console.log(error.message);
+        throw new Error(error.message);
+    }
 }
 
-async function getCurrentSeed(participant_id: string){
+async function getCurrentSeed(participant_id: string) {
     const supabase = createClient();
 
-    const {data, error} = await (await supabase)
-        .from('event_participants')
-        .select('seed')
-        .eq('id', participant_id)
+    const { data, error } = await (await supabase)
+        .from("event_participants")
+        .select("seed")
+        .eq("id", participant_id)
         .single();
-    
-    if(error){
+
+    if (error) {
         throw error;
     }
 
-    if(!data.seed){
-        throw new Error("Seed is not set")
+    if (!data.seed) {
+        throw new Error("Seed is not set");
     }
 
     return data.seed;
 }
 
-export async function swapSeed(eventId: string, participant1_id : string, participant2_id: string){
-
+export async function swapSeed(
+    eventId: string,
+    participant1_id: string,
+    participant2_id: string
+) {
     let participant1Seed: number;
     let participant2Seed: number;
 
-    try{
-        [participant1Seed, participant2Seed] = await Promise.all([getCurrentSeed(participant1_id), getCurrentSeed(participant2_id)]);
+    try {
+        [participant1Seed, participant2Seed] = await Promise.all([
+            getCurrentSeed(participant1_id),
+            getCurrentSeed(participant2_id),
+        ]);
 
-        if(!participant1Seed || !participant2Seed){
+        if (!participant1Seed || !participant2Seed) {
             throw new Error("Cannot swap seeds that are not set");
         }
-    } catch(error){
+    } catch (error) {
         throw new Error("Error occured fetching seeds for the participants");
     }
 
-    try{
-        const [res1, res2] = await Promise.all([updateParticipantSeed(eventId, participant1_id, null), updateParticipantSeed(eventId, participant2_id, null)])
-        if (!res1 || !res2){
+    try {
+        const [res1, res2] = await Promise.all([
+            updateParticipantSeed(eventId, participant1_id, null),
+            updateParticipantSeed(eventId, participant2_id, null),
+        ]);
+        if (!res1 || !res2) {
             throw new Error("Failed to reset seed");
         }
-
-    } catch(error){
+    } catch (error) {
         throw new Error("Error resetting seeds");
     }
 
-    try{
-        const [res1, res2] = await Promise.all([updateParticipantSeed(eventId, participant1_id, participant2Seed), updateParticipantSeed(eventId, participant2_id, participant1Seed)])
-        if(!res1 || !res2){
+    try {
+        const [res1, res2] = await Promise.all([
+            updateParticipantSeed(eventId, participant1_id, participant2Seed),
+            updateParticipantSeed(eventId, participant2_id, participant1Seed),
+        ]);
+        if (!res1 || !res2) {
             throw new Error("Error swapping seeds");
         }
-    } catch(error){
+    } catch (error) {
         console.log(error);
-        throw new Error("Error swapping seeds. Seed removed.")
+        throw new Error("Error swapping seeds. Seed removed.");
     }
 }
