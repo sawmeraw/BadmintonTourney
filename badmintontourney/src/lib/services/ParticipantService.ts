@@ -5,9 +5,9 @@ import { CreateParticipantPayload, CreatePlayerPayload } from "../types/writes";
 export type ParticipantStatus = Participant["status"];
 
 export async function removeSeed(ids: string[]) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
-    const { error } = await (await supabase)
+    const { error } = await supabase
         .from("event_participants")
         .update({ seed: null })
         .in("id", ids);
@@ -19,20 +19,21 @@ export async function deleteParticipants(
     eventId: string,
     participantIds: string[]
 ) {
-    const supabase = createClient();
-    const { data, error } = await (await supabase)
+    const supabase = await createClient();
+    const { data, error } = await supabase
         .from("event_participants")
         .update({ is_deleted: true, seed: null })
         .in("id", participantIds);
 
     if (error) throw new Error(error.message);
 
-    const { error: decrementError } = await (
-        await supabase
-    ).rpc("decrement_current_entries", {
-        event_id_input: eventId,
-        count_input: participantIds.length,
-    });
+    const { error: decrementError } = await supabase.rpc(
+        "decrement_current_entries",
+        {
+            event_id_input: eventId,
+            count_input: participantIds.length,
+        }
+    );
 
     if (decrementError) {
         console.log(decrementError);
@@ -44,8 +45,8 @@ export async function updateParticipantStatus(
     ids: string[],
     status: ParticipantStatus
 ) {
-    const supabase = createClient();
-    const { error } = await (await supabase)
+    const supabase = await createClient();
+    const { error } = await supabase
         .from("event_participants")
         .update({ status: status })
         .in("id", ids);
@@ -54,11 +55,11 @@ export async function updateParticipantStatus(
 }
 
 async function getNewSeedForEventId(eventId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     //get the max participants set in events table
 
-    const { data: eventData, error: eventError } = await (await supabase)
+    const { data: eventData, error: eventError } = await supabase
         .from("events")
         .select("max_participants")
         .eq("id", eventId)
@@ -72,7 +73,7 @@ async function getNewSeedForEventId(eventId: string) {
         throw new Error("Invalid max participants value");
 
     //get all seeds
-    const { data: seedData, error: seedError } = await (await supabase)
+    const { data: seedData, error: seedError } = await supabase
         .from("event_participants")
         .select("seed")
         .eq("event_id", eventId);
@@ -94,9 +95,9 @@ async function getNewSeedForEventId(eventId: string) {
 }
 
 export async function createPlayer(player: CreatePlayerPayload) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
-    const { data, error } = await (await supabase)
+    const { data, error } = await supabase
         .from("players")
         .insert(player)
         .select("id")
@@ -107,63 +108,61 @@ export async function createPlayer(player: CreatePlayerPayload) {
 }
 
 export async function setSeed(id: string, newSeed: number) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
-    const { error } = await (await supabase)
+    const { error } = await supabase
         .from("event_participants")
         .update({ seed: newSeed })
         .eq("id", id);
 
-    console.log(error);
+    // console.log(error);
     if (error) throw error;
 }
+
+// async function getMaxSeedAllowedForEventId(eventId: string) {
+//     const supabase = await createClient();
+
+//     const { data, error } = await supabase.rpc("get_event_participant_count", {
+//         p_event_id: eventId,
+//     });
+
+//     if (!data) {
+//         throw new Error("Event not found");
+//     }
+
+//     if (error) {
+//         throw new Error("Error occurred during validating seed data");
+//     }
+
+//     return data;
+// }
 
 export async function updateParticipantSeed(
     eventId: string,
     participantId: string,
     newSeed: number | null
 ) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
-    if (newSeed !== null) {
-        const { data: existingSeed, error: conflictError } = await (
-            await supabase
-        )
-            .from("event_participants")
-            .select("id")
-            .eq("event_id", eventId)
-            .eq("seed", newSeed)
-            .not("id", "eq", participantId)
-            .maybeSingle();
+    const { error } = await supabase.rpc("update_seed", {
+        p_event_id: eventId,
+        p_participant_id: participantId,
+        newseed: newSeed !== null ? newSeed : undefined,
+    });
 
-        if (conflictError) throw new Error(conflictError.message);
-
-        if (existingSeed) {
-            throw new Error(`Seed #${newSeed} is already taken in this event`);
-        }
+    if (error) {
+        console.log(error.message);
+        throw new Error(error.message);
     }
-
-    const { data: updatedData, error: updateError } = await (await supabase)
-        .from("event_participants")
-        .update({ seed: newSeed })
-        .eq("id", participantId)
-        .select()
-        .single();
-
-    if (updateError) throw new Error(updateError.message);
-
-    return updatedData;
 }
 
 export async function createParticipant(
     eventId: string,
     payload: CreateParticipantPayload
 ) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
-    const { data, error } = await (
-        await supabase
-    ).rpc("register_participant", {
+    const { data, error } = await supabase.rpc("register_participant", {
         p_event_id: eventId,
         p_is_doubles: payload.event_type === "doubles" ? true : false,
         p_player1: payload.player1,
@@ -179,7 +178,7 @@ export async function createParticipant(
         const newParticipant = data as Participant;
         try {
             const newSeed = await getNewSeedForEventId(eventId);
-            await (await supabase)
+            await supabase
                 .from("event_participants")
                 .update({ seed: newSeed })
                 .eq("id", newParticipant.id);
@@ -190,9 +189,9 @@ export async function createParticipant(
 }
 
 async function getCurrentSeed(participant_id: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
-    const { data, error } = await (await supabase)
+    const { data, error } = await supabase
         .from("event_participants")
         .select("seed")
         .eq("id", participant_id)
@@ -231,25 +230,19 @@ export async function swapSeed(
     }
 
     try {
-        const [res1, res2] = await Promise.all([
+        await Promise.all([
             updateParticipantSeed(eventId, participant1_id, null),
             updateParticipantSeed(eventId, participant2_id, null),
         ]);
-        if (!res1 || !res2) {
-            throw new Error("Failed to reset seed");
-        }
     } catch (error) {
         throw new Error("Error resetting seeds");
     }
 
     try {
-        const [res1, res2] = await Promise.all([
+        await Promise.all([
             updateParticipantSeed(eventId, participant1_id, participant2Seed),
             updateParticipantSeed(eventId, participant2_id, participant1Seed),
         ]);
-        if (!res1 || !res2) {
-            throw new Error("Error swapping seeds");
-        }
     } catch (error) {
         console.log(error);
         throw new Error("Error swapping seeds. Seed removed.");
