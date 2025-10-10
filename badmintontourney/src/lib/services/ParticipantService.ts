@@ -26,19 +26,6 @@ export async function deleteParticipants(
         .in("id", participantIds);
 
     if (error) throw new Error(error.message);
-
-    const { error: decrementError } = await supabase.rpc(
-        "decrement_current_entries",
-        {
-            event_id_input: eventId,
-            count_input: participantIds.length,
-        }
-    );
-
-    if (decrementError) {
-        console.log(decrementError);
-        throw new Error("Couldn't update current entries for the event.");
-    }
 }
 
 export async function updateParticipantStatus(
@@ -118,24 +105,6 @@ export async function setSeed(id: string, newSeed: number) {
     // console.log(error);
     if (error) throw error;
 }
-
-// async function getMaxSeedAllowedForEventId(eventId: string) {
-//     const supabase = await createClient();
-
-//     const { data, error } = await supabase.rpc("get_event_participant_count", {
-//         p_event_id: eventId,
-//     });
-
-//     if (!data) {
-//         throw new Error("Event not found");
-//     }
-
-//     if (error) {
-//         throw new Error("Error occurred during validating seed data");
-//     }
-
-//     return data;
-// }
 
 export async function updateParticipantSeed(
     eventId: string,
