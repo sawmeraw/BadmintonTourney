@@ -9,6 +9,7 @@ import {
 import { EventType } from "@/supabase/queryTypes";
 import { ParticipantListApiResponse, PlayerBase } from "../types/api";
 import { PostgrestError } from "@supabase/supabase-js";
+import { _generateStraightKnockoutRounds } from "./RoundService";
 
 export async function getEventWithEventIdForEdit(eventId: string) {
     const supabase = await createClient();
@@ -214,4 +215,42 @@ export async function getFinalizeValidationDetails(
     }
 
     return { success: true, details: "Event is ready to be finalized" };
+}
+
+export async function generateRoundsAndGroups(eventId: string) {
+    const supabase = await createClient();
+
+    const { data: eventData, error: eventError } = await supabase
+        .from("events")
+        .select("*, tournament_format_templates(name)")
+        .eq("id", eventId)
+        .single();
+
+    if (eventError || !eventData) throw new Error("Event not found");
+
+    console.log(eventData);
+    const { data: participantCount, error: countError } = await supabase.rpc(
+        "get_event_participant_count",
+        {
+            p_event_id: eventId,
+        }
+    );
+
+    if (!participantCount || countError) {
+        // console.log(countError);
+        throw new Error("Error finding participants");
+    }
+    const formatName = eventData.tournament_format_templates?.name;
+
+    switch (formatName) {
+        case "Straight Knockout":
+            await _generateStraightKnockoutRounds(eventId, participantCount);
+            break;
+        case "Pools to Knockout":
+            break;
+        default:
+            throw new Error(
+                `Unknown or unsupported event format: ${formatName}`
+            );
+    }
 }

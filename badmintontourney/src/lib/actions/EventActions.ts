@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import {
     createEvent,
+    generateRoundsAndGroups,
     updateEventWithId,
     validateFinalizeEvent,
 } from "../services/EventService";
@@ -156,6 +157,8 @@ export async function updateEventAction(
                     success: false,
                 };
             }
+
+            generateRoundsAndGroups(eventId);
         }
 
         try {

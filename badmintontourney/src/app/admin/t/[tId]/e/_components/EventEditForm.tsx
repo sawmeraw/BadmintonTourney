@@ -577,16 +577,18 @@ export default function EventEditForm({
                                             },
                                         }}
                                     />
-                                    <Button
-                                        fullWidth
-                                        color={
-                                            validationInfo.success
-                                                ? "success"
-                                                : "warning"
-                                        }
-                                    >
-                                        <p>{validationInfo.details}</p>
-                                    </Button>
+                                    {!initialData?.finalised_for_matches && (
+                                        <Button
+                                            fullWidth
+                                            color={
+                                                validationInfo.success
+                                                    ? "success"
+                                                    : "warning"
+                                            }
+                                        >
+                                            <p>{validationInfo.details}</p>
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
                         </div>

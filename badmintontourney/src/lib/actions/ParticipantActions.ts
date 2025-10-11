@@ -97,7 +97,7 @@ export async function createParticipantHandler(
         throw new Error("Validation failed");
     }
 
-    console.log("validated fields: ", validatedFields.data);
+    // console.log("validated fields: ", validatedFields.data);
 
     try {
         await createParticipant(payload.event_id, payload);
