@@ -22,7 +22,7 @@ export default async function EditTournamentPage({
     return (
         <PageWrapper>
             <div className="my-4">
-                <h3 className="text-3xl font-bold">Edit Tournament</h3>
+                <h3 className="text-2xl font-bold">Edit Tournament</h3>
             </div>
             <TournamentEditForm
                 initialData={tournament}

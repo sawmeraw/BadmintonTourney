@@ -7,31 +7,33 @@ import { Toaster } from "react-hot-toast";
 import React from "react";
 import { ThemeRegistry } from "./providers";
 import { inter } from "./fonts";
+import { Breadcrumbs } from "@/components/utils/Breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Tourney - Badminton Tournament Engine",
-  description: "Manage your badminton tournaments with ease.",
+    title: "Tourney - Badminton Tournament Engine",
+    description: "Manage your badminton tournaments with ease.",
 };
 
 export default function RootLayout({
-  children,
+    children,
 }: Readonly<{
-  children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body className={`${inter.className} bg-gray-50 text-gray-900`}>
-        <ThemeRegistry>
-          <div className="flex min-h-screen flex-col">
-            <ReactQueryProvider>
-              <Toaster position="top-center"/>
-              <Header />
-              {children}
-              <Footer />
-            </ReactQueryProvider>
-          </div>
-        </ThemeRegistry>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en">
+            <body className={`${inter.className} bg-gray-50 text-gray-900`}>
+                <ThemeRegistry>
+                    <div className="flex min-h-screen flex-col">
+                        <ReactQueryProvider>
+                            <Toaster position="top-center" />
+                            <Header />
+                            <Breadcrumbs />
+                            {children}
+                            <Footer />
+                        </ReactQueryProvider>
+                    </div>
+                </ThemeRegistry>
+            </body>
+        </html>
+    );
 }

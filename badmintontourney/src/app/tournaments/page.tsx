@@ -1,8 +1,8 @@
-import { createClient } from '@/supabase/server';
-import { TournamentList } from '@/components/tournaments/TournamentList';
-import { PaginationControls } from '@/components/utils/PaginationControls';
-import Button from '@mui/material/Button';
-import { PageWrapper } from '@/components/layout/PageWrapper';
+import { createClient } from "@/supabase/server";
+import { TournamentList } from "@/components/tournaments/TournamentList";
+import { PaginationControls } from "@/components/utils/PaginationControls";
+import Button from "@mui/material/Button";
+import { PageWrapper } from "@/components/layout/PageWrapper";
 
 const PAGE_SIZE = 10;
 
@@ -12,9 +12,12 @@ const fetchTournaments = async (page: number) => {
     const to = from + PAGE_SIZE - 1;
 
     const { data, error, count } = await (await supabase)
-        .from('tournaments')
-        .select('id, name, status, start_date, end_date, locations(name, city), events(count)', { count: 'exact' })
-        .order('start_date', { ascending: false })
+        .from("tournaments")
+        .select(
+            "id, name, status, start_date, end_date, locations(name, city), events(count)",
+            { count: "exact" }
+        )
+        .order("start_date", { ascending: false })
         .range(from, to);
 
     if (error || !data) {
@@ -25,16 +28,15 @@ const fetchTournaments = async (page: number) => {
     return { tournaments: data || [], totalCount: count || 0 };
 };
 
-
 export default async function TournamentsPage({
-  searchParams,
+    searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
     const filters = await searchParams;
     const pageParam = filters.page;
     const pageString = Array.isArray(pageParam) ? pageParam[0] : pageParam;
-    const parsedPage = parseInt(pageString ?? '1', 10);
+    const parsedPage = parseInt(pageString ?? "1", 10);
     const currentPage = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
     //totalCount is for pagination
     const { tournaments, totalCount } = await fetchTournaments(currentPage);
@@ -43,11 +45,13 @@ export default async function TournamentsPage({
         <PageWrapper>
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-4xl font-bold tracking-tight text-gray-900">Tournaments</h1>
-                    <p className="mt-1 text-lg text-gray-600">Browse all upcoming and past events.</p>
+                    {/* <h1 className="text-4xl font-bold tracking-tight text-gray-900">Tournaments</h1> */}
+                    <p className="mt-1 text-lg text-gray-600">
+                        Browse all upcoming and past events.
+                    </p>
                 </div>
                 <div>
-                    <Button href="/tournaments/create" variant='contained'>
+                    <Button href="/tournaments/create" variant="contained">
                         Create Tournament
                     </Button>
                 </div>
@@ -62,4 +66,4 @@ export default async function TournamentsPage({
             />
         </PageWrapper>
     );
-};
+}
