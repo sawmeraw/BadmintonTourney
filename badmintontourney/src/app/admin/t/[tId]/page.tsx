@@ -1,14 +1,17 @@
 import { notFound } from "next/navigation";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { getTournamentForEdit, getAllLocations } from "@/lib/services/TournamentService";
+import {
+    getTournamentForEdit,
+    getAllLocations,
+} from "@/lib/services/TournamentService";
 import TournamentEditForm from "../_components/TournamentEditForm";
 
 export default async function EditTournamentPage({
-  params,
+    params,
 }: {
-  params: Promise<{ tId: string }>
+    params: Promise<{ tId: string }>;
 }) {
-    const {tId} = await params;
+    const { tId } = await params;
     const [tournament, locations] = await Promise.all([
         getTournamentForEdit(tId),
         getAllLocations(),
@@ -21,7 +24,11 @@ export default async function EditTournamentPage({
             <div className="my-4">
                 <h3 className="text-3xl font-bold">Edit Tournament</h3>
             </div>
-            <TournamentEditForm initialData={tournament} locations={locations} events={tournament.events}/>
+            <TournamentEditForm
+                initialData={tournament}
+                locations={locations}
+                events={tournament.events}
+            />
         </PageWrapper>
     );
 }

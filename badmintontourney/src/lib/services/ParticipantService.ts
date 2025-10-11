@@ -139,7 +139,7 @@ export async function createParticipant(
     });
 
     if (error) {
-        console.log(error.message);
+        // console.log(error.message);
         throw new Error(error.message);
     }
 
