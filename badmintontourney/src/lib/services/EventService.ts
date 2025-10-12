@@ -222,13 +222,13 @@ export async function generateRoundsAndGroups(eventId: string) {
 
     const { data: eventData, error: eventError } = await supabase
         .from("events")
-        .select("*, tournament_format_templates(name)")
+        .select("*, tournament_format_templates(id,name)")
         .eq("id", eventId)
         .single();
 
     if (eventError || !eventData) throw new Error("Event not found");
 
-    console.log(eventData);
+    // console.log(eventData);
     const { data: participantCount, error: countError } = await supabase.rpc(
         "get_event_participant_count",
         {
@@ -241,10 +241,18 @@ export async function generateRoundsAndGroups(eventId: string) {
         throw new Error("Error finding participants");
     }
     const formatName = eventData.tournament_format_templates?.name;
+    const formatId = eventData.tournament_format_templates?.id;
 
     switch (formatName) {
         case "Straight Knockout":
-            await _generateStraightKnockoutRounds(eventId, participantCount);
+            try {
+                await _generateStraightKnockoutRounds(
+                    eventId,
+                    participantCount
+                );
+            } catch (error) {
+                throw error;
+            }
             break;
         case "Pools to Knockout":
             break;

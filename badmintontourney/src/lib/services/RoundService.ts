@@ -1,12 +1,22 @@
 import { createClient } from "@/supabase/server";
 
+type CreateKnockoutRoundsRPCPayload = {
+    p_event_id: string;
+    p_rounds_data: {
+        name: string;
+        sequence: number;
+        round_type_id: string;
+    }[];
+};
+
 export async function _generateStraightKnockoutRounds(
     eventId: string,
     participantCount: number
 ) {
-    const roundsToCreate = [];
-    const groupsToCreate = [];
-
+    let roundsPayload: CreateKnockoutRoundsRPCPayload = {
+        p_event_id: eventId,
+        p_rounds_data: [],
+    };
     //log 2 of the count since each round halves the players
     const numRounds = Math.ceil(Math.log2(participantCount));
     // console.log(participantCount);
@@ -16,6 +26,7 @@ export async function _generateStraightKnockoutRounds(
     const numByes = currentBracketSize - participantCount;
 
     const roundTypes = await getAllRoundTypes();
+
     const singleElimRoundTypeId = roundTypes.find(
         (type) => type.name === "Single Elimination"
     )?.id;
@@ -24,16 +35,15 @@ export async function _generateStraightKnockoutRounds(
         const prelimRoundId = roundTypes.find(
             (type) => type.name === "Preliminary Round"
         )?.id;
-        roundsToCreate.push({
-            event_id: eventId,
+        roundsPayload.p_rounds_data.push({
             name: "Preliminary Round",
             sequence: 1,
-            round_type_id: prelimRoundId,
+            round_type_id: prelimRoundId!,
         });
         currentBracketSize /= 2;
     }
 
-    let sequence = roundsToCreate.length + 1;
+    let sequence = roundsPayload.p_rounds_data.length + 1;
 
     while (currentBracketSize >= 2) {
         let roundName = "";
@@ -42,17 +52,25 @@ export async function _generateStraightKnockoutRounds(
         else if (currentBracketSize === 8) roundName = "Quarter-Finals";
         else roundName = `Round of ${currentBracketSize}`;
 
-        roundsToCreate.push({
-            event_id: eventId,
+        roundsPayload.p_rounds_data.push({
             name: roundName,
             sequence: sequence,
-            round_type_id: singleElimRoundTypeId,
+            round_type_id: singleElimRoundTypeId!,
         });
 
         sequence++;
         currentBracketSize /= 2;
     }
-    console.log(roundsToCreate);
+
+    console.log("Rounds payload: ", roundsPayload);
+
+    try {
+        await createRoundsRPC(roundsPayload);
+    } catch (error) {
+        throw error;
+    }
+
+    console.log("rounds and round groups created successfully.");
 }
 
 async function getAllRoundTypes() {
@@ -63,4 +81,20 @@ async function getAllRoundTypes() {
     if (!data || error) throw error;
 
     return data;
+}
+
+//round groups just needs the round id
+//create round groups; for knockout it would just main bracket for each round
+//for pools, it would be creating different groups using round_id which would then be referenced in the matches table
+//rounds table needs the template id
+async function createRoundsRPC(payload: CreateKnockoutRoundsRPCPayload) {
+    const supabase = await createClient();
+
+    const { error } = await supabase.rpc("create_knockout_rounds_and_groups", {
+        p_event_id: payload.p_event_id,
+        p_rounds_data: payload.p_rounds_data,
+    });
+
+    console.log("Error:", error);
+    if (error) throw new Error("Failed to create rounds for the event");
 }
