@@ -70,7 +70,7 @@ export async function _generateStraightKnockoutRounds(
         throw error;
     }
 
-    console.log("rounds and round groups created successfully.");
+    // console.log("rounds and round groups created successfully.");
 }
 
 async function getAllRoundTypes() {

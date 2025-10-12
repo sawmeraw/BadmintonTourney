@@ -182,7 +182,7 @@ export async function validateFinalizeEvent(eventId: string) {
     });
 
     if (!data) {
-        console.log("not sure what this means");
+        // console.log("not sure what this means");
     }
 
     if (error) {
