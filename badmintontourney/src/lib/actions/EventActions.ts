@@ -158,11 +158,11 @@ export async function updateEventAction(
                 };
             }
 
-            // generateRoundsAndGroups(eventId);
+            generateRoundsAndGroups(eventId);
         }
 
         try {
-            // await updateEventWithId(eventId, validatedFields.data);
+            await updateEventWithId(eventId, validatedFields.data);
         } catch (error) {
             const message =
                 error instanceof Error

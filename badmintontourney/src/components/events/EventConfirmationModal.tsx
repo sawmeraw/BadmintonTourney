@@ -35,9 +35,8 @@ export default function EventConfirmationModal({
                         registrations and generate the matches automatically.
                     </p>
                     <div className="mt-2">
-                        <p>
-                            <strong>Max Participants: </strong>
-                            {maxParticipants || "Not Set"}
+                        <p className="font-semibold">
+                            This will generate the first round of matches.
                         </p>
                         <p>
                             <strong>Current Entries: </strong>

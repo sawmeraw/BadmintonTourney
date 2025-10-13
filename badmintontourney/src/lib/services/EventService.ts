@@ -241,7 +241,6 @@ export async function generateRoundsAndGroups(eventId: string) {
         throw new Error("Error finding participants");
     }
     const formatName = eventData.tournament_format_templates?.name;
-    const formatId = eventData.tournament_format_templates?.id;
 
     switch (formatName) {
         case "Straight Knockout":

@@ -1,7 +1,7 @@
-'use client';
-import { useRounds } from '@/hooks/useRounds';
-import { PoolsView } from './PoolsView';
-import { BracketView } from './BracketsView';
+"use client";
+import { useRounds } from "@/hooks/useRounds";
+import { PoolsView } from "./PoolsView";
+import { BracketView } from "./BracketsView";
 
 const BracketSkeleton = () => (
     <div className="animate-pulse">
@@ -14,18 +14,31 @@ const BracketSkeleton = () => (
     </div>
 );
 
-export function BracketsTab({ round }: { round: { id: string; name: string } }) {
-
+export function BracketsTab({
+    round,
+}: {
+    round: { id: string; name: string };
+}) {
     const { data, isLoading, isError, error } = useRounds(round.id);
 
     if (isLoading) return <BracketSkeleton />;
     if (isError) return <p className="text-red-500">Error: {error.message}</p>;
-    if (!data) return <p className="text-gray-500">No details found for this round.</p>;
+    if (!data)
+        return (
+            <p className="text-gray-500">No details found for this round.</p>
+        );
 
     return (
         <div>
-            {data.round_type.name === 'Round Robin' && <PoolsView data={data} />}
-            {data.round_type.name === 'Single Elimination' && <BracketView data={data} />}
+            {data.round_type.name === "Round Robin" && (
+                <PoolsView data={data} />
+            )}
+            {data.round_type.name === "Single Elimination" && (
+                <BracketView data={data} />
+            )}
+            {data.round_type.name === "Preliminary Round" && (
+                <BracketView data={data} />
+            )}
         </div>
     );
 }
