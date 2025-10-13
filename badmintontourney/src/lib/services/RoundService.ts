@@ -65,12 +65,10 @@ export async function _generateStraightKnockoutRounds(
     console.log("Rounds payload: ", roundsPayload);
 
     try {
-        await createRoundsRPC(roundsPayload);
+        await createKnockoutRoundsRPC(roundsPayload);
     } catch (error) {
         throw error;
     }
-
-    // console.log("rounds and round groups created successfully.");
 }
 
 async function getAllRoundTypes() {
@@ -87,7 +85,9 @@ async function getAllRoundTypes() {
 //create round groups; for knockout it would just main bracket for each round
 //for pools, it would be creating different groups using round_id which would then be referenced in the matches table
 //rounds table needs the template id
-async function createRoundsRPC(payload: CreateKnockoutRoundsRPCPayload) {
+async function createKnockoutRoundsRPC(
+    payload: CreateKnockoutRoundsRPCPayload
+) {
     const supabase = await createClient();
 
     const { error } = await supabase.rpc("create_knockout_rounds_and_groups", {
