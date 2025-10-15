@@ -55,10 +55,7 @@ export type MatchSummary = Pick<
     | "court_number"
 >;
 
-export type EventRoundDetailsApiResponse = Pick<
-    EventRound,
-    "id" | "name" | "sequence"
-> & {
+export type RoundDetails = Pick<EventRound, "id" | "name" | "sequence"> & {
     round_type: Pick<
         RoundType,
         "id" | "name" | "created_at" | "updated_at" | "description"
@@ -85,4 +82,8 @@ export type EventRoundDetailsApiResponse = Pick<
             >;
         }
     >;
+};
+
+export type EventBracketsApiResponse = {
+    rounds: RoundDetails[];
 };
