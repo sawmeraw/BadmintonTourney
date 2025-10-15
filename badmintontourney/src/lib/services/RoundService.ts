@@ -71,10 +71,13 @@ export async function _generateStraightKnockoutRounds(
     }
 
     try {
-        await createFirstRoundMatches(eventId);
+        await createFullKnockoutBrackets(eventId);
     } catch (error) {
+        console.log(error);
         throw error;
     }
+
+    console.log("Full knockout bracket created successfully");
 }
 
 async function getAllRoundTypes() {
@@ -108,9 +111,9 @@ async function createKnockoutRoundsAndMatchesRPC(
     if (knockoutError) throw new Error("Failed to create rounds for the event");
 }
 
-async function createFirstRoundMatches(eventId: string) {
+async function createFullKnockoutBrackets(eventId: string) {
     const supabase = await createClient();
-    const { error } = await supabase.rpc("generate_initial_knockout_matches", {
+    const { error } = await supabase.rpc("generate_full_knockout_bracket", {
         p_event_id: eventId,
     });
 
