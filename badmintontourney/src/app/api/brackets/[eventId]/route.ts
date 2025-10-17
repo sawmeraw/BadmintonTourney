@@ -35,7 +35,7 @@ export async function GET(
             );
         }
 
-        // console.log(data);
+        // console.dir(data, { depth: null });
         return NextResponse.json(data);
     } catch (error) {
         const errorMessage =
