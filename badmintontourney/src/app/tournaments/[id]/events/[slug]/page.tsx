@@ -1,3 +1,4 @@
+import BracketUI from "@/components/brackets/BracketUI";
 import { EventHeader } from "@/components/events/EventHeader";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { createClient } from "@/supabase/server";
@@ -32,6 +33,7 @@ export default async function EventDetailsPage({
     return (
         <PageWrapper>
             <EventHeader event={event} />
+            <BracketUI eventId={slug} />
         </PageWrapper>
     );
 }
